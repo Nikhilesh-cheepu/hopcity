@@ -18,7 +18,7 @@ function serialize(r: {
   id: string;
   staffType: string;
   entryType: string;
-  bookingSource: string;
+  bookingSource?: string | null;
   guestName: string;
   mobileNo: string;
   partySize: number;
@@ -30,7 +30,7 @@ function serialize(r: {
     id: r.id,
     staffType: r.staffType,
     entryType: r.entryType,
-    bookingSource: r.bookingSource,
+    bookingSource: r.bookingSource ?? "direct",
     guestName: r.guestName,
     mobileNo: r.mobileNo,
     partySize: r.partySize,

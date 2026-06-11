@@ -68,7 +68,9 @@ export function reservationEntryTypeLabel(entryType: string): string {
   return getEntryTypeLabel(entryType);
 }
 
-export function reservationBookingSourceLabel(bookingSource: string): string {
+export function reservationBookingSourceLabel(
+  bookingSource: string | null | undefined,
+): string {
   return getBookingSourceLabel(bookingSource);
 }
 

@@ -2,6 +2,7 @@
 
 import { useState, type ReactNode } from "react";
 import { todayDateString } from "@/data/venues";
+import { ClearDataButton } from "./ClearDataButton";
 import { EntryForm } from "./EntryForm";
 import { GuestList } from "./GuestList";
 import { SendReportButton } from "./SendReportButton";
@@ -112,6 +113,7 @@ export function StaffPortal() {
             from={dateFrom}
             to={dateTo}
           />
+          <ClearDataButton onCleared={() => setRefreshKey((k) => k + 1)} />
         </>
       )}
     </div>

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { StaffGate } from "@/components/staff/StaffGate";
 import { StaffPortal } from "@/components/staff/StaffPortal";
 
 export const metadata: Metadata = {
@@ -14,7 +15,9 @@ export default function StaffPage() {
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,_rgba(116,194,116,0.08)_0%,_transparent_45%)]" />
 
       <div className="relative z-10 pt-2">
-        <StaffPortal />
+        <StaffGate>
+          <StaffPortal />
+        </StaffGate>
       </div>
     </div>
   );

@@ -45,13 +45,14 @@ export function formatOtherBookingSource(label: string): string {
   return `${BOOKING_SOURCE_PREFIX}${label.trim()}`;
 }
 
-export function isOtherBookingSource(id: string): boolean {
+export function isOtherBookingSource(id: string | null | undefined): boolean {
+  if (!id) return false;
   return id === "other" || id.startsWith(BOOKING_SOURCE_PREFIX);
 }
 
-export function parseOtherBookingSourceLabel(id: string): string {
-  if (id.startsWith(BOOKING_SOURCE_PREFIX)) return id.slice(BOOKING_SOURCE_PREFIX.length);
-  return "";
+export function parseOtherBookingSourceLabel(id: string | null | undefined): string {
+  if (!id?.startsWith(BOOKING_SOURCE_PREFIX)) return "";
+  return id.slice(BOOKING_SOURCE_PREFIX.length);
 }
 
 export function getVenueLabel(id: string): string {
@@ -62,7 +63,8 @@ export function getEntryTypeLabel(id: string): string {
   return ENTRY_TYPES.find((e) => e.id === id)?.label ?? id;
 }
 
-export function getBookingSourceLabel(id: string): string {
+export function getBookingSourceLabel(id: string | null | undefined): string {
+  if (!id) return "Direct";
   const custom = parseOtherBookingSourceLabel(id);
   if (custom) return custom;
   return BOOKING_SOURCES.find((s) => s.id === id)?.label ?? id;
