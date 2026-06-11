@@ -5,8 +5,8 @@ import { WaitlistForm } from "@/components/coming-soon/WaitlistForm";
 export default function Home() {
   return (
     <div className="relative flex min-h-[100dvh] flex-col items-center justify-center overflow-hidden px-4 pb-[max(2rem,env(safe-area-inset-bottom))] pt-[max(2rem,env(safe-area-inset-top))] sm:px-6 lg:px-8">
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top,_rgba(174,201,176,0.12)_0%,_transparent_55%)]" />
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_bottom,_rgba(174,201,176,0.06)_0%,_transparent_50%)]" />
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top,_rgba(116,194,116,0.12)_0%,_transparent_55%)]" />
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_bottom,_rgba(116,194,116,0.06)_0%,_transparent_50%)]" />
 
       <main className="relative z-10 flex w-full max-w-lg flex-col items-center text-center sm:max-w-xl lg:max-w-2xl">
         <HopLogo />

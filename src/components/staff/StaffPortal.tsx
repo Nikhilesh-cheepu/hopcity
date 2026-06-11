@@ -10,7 +10,7 @@ import { TodayStats } from "./TodayStats";
 type Tab = "entry" | "guests";
 
 const dateInputClass =
-  "w-full rounded-lg border border-hop-green/20 bg-black/50 px-3 py-2 text-sm text-hop-white outline-none focus:border-hop-green/50 focus:shadow-[0_0_16px_rgba(174,201,176,0.12)]";
+  "w-full rounded-lg border border-hop-green/20 bg-black/50 px-3 py-2 text-sm text-hop-white outline-none focus:border-hop-green/50 focus:shadow-[0_0_16px_rgba(116,194,116,0.12)]";
 
 export function StaffPortal() {
   const [tab, setTab] = useState<Tab>("entry");
@@ -133,7 +133,7 @@ function TabButton({
       onClick={onClick}
       className={`flex-1 rounded-xl py-3 text-sm font-semibold uppercase tracking-[0.12em] transition ${
         active
-          ? "bg-hop-green text-hop-black shadow-[0_4px_20px_rgba(174,201,176,0.35)]"
+          ? "bg-hop-green text-hop-black shadow-[0_4px_20px_rgba(116,194,116,0.35)]"
           : "text-hop-white/45 hover:text-hop-white/70"
       }`}
     >

@@ -2,9 +2,9 @@
 
 :root {
   --hop-black: #000000;
-  --hop-green: #aec9b0;
-  --hop-green-light: #c5d9c7;
-  --hop-green-dark: #8fb394;
+  --hop-green: #74c274;
+  --hop-green-light: #92d692;
+  --hop-green-dark: #5daa5d;
   --hop-white: #ffffff;
   --background: var(--hop-black);
   --foreground: var(--hop-white);

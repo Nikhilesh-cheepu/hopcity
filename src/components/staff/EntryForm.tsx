@@ -12,7 +12,7 @@ import {
 import { GlassCard } from "./GlassCard";
 
 const inputClass =
-  "min-h-12 w-full rounded-xl border border-hop-green/20 bg-black/50 px-4 py-3 text-base text-hop-white placeholder:text-hop-white/30 shadow-[inset_0_2px_8px_rgba(0,0,0,0.4)] outline-none transition focus:border-hop-green/60 focus:shadow-[0_0_20px_rgba(174,201,176,0.15)]";
+  "min-h-12 w-full rounded-xl border border-hop-green/20 bg-black/50 px-4 py-3 text-base text-hop-white placeholder:text-hop-white/30 shadow-[inset_0_2px_8px_rgba(0,0,0,0.4)] outline-none transition focus:border-hop-green/60 focus:shadow-[0_0_20px_rgba(116,194,116,0.15)]";
 
 const labelClass =
   "mb-1.5 block text-[0.65rem] font-semibold uppercase tracking-[0.18em] text-hop-green/80";
@@ -96,7 +96,7 @@ export function EntryForm({
                 onClick={() => setEntryType(t.id)}
                 className={`min-h-11 rounded-xl border text-sm font-semibold transition ${
                   entryType === t.id
-                    ? "border-hop-green/50 bg-hop-green/20 text-hop-green-light shadow-[0_0_16px_rgba(174,201,176,0.15)]"
+                    ? "border-hop-green/50 bg-hop-green/20 text-hop-green-light shadow-[0_0_16px_rgba(116,194,116,0.15)]"
                     : "border-white/10 bg-black/30 text-hop-white/45"
                 }`}
               >
@@ -195,7 +195,7 @@ export function EntryForm({
         <button
           type="submit"
           disabled={status === "loading"}
-          className="min-h-13 w-full rounded-xl bg-hop-green py-3.5 text-base font-bold tracking-wide text-hop-black shadow-[0_4px_24px_rgba(174,201,176,0.35)] transition active:scale-[0.98] hover:bg-hop-green-light hover:shadow-[0_6px_32px_rgba(174,201,176,0.45)] disabled:opacity-60"
+          className="min-h-13 w-full rounded-xl bg-hop-green py-3.5 text-base font-bold tracking-wide text-hop-black shadow-[0_4px_24px_rgba(116,194,116,0.35)] transition active:scale-[0.98] hover:bg-hop-green-light hover:shadow-[0_6px_32px_rgba(116,194,116,0.45)] disabled:opacity-60"
         >
           {status === "loading" ? "Saving…" : "Check In Guest"}
         </button>
