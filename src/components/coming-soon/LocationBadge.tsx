@@ -8,6 +8,7 @@ export function LocationBadge() {
         alt=""
         width={28}
         height={28}
+        unoptimized
         aria-hidden
         className="h-7 w-7 shrink-0 rounded-full"
       />
