@@ -17,7 +17,7 @@ function createPrismaClient(): PrismaClient | null {
 function isUsableClient(
   client: PrismaClient | null | undefined,
 ): client is PrismaClient {
-  return Boolean(client && "reservation" in client);
+  return Boolean(client && "reservation" in client && "guestReminder" in client);
 }
 
 const globalForPrisma = globalThis as unknown as {

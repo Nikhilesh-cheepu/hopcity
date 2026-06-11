@@ -22,7 +22,8 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Type DELETE to confirm.' }, { status: 400 });
     }
 
-    const [reservations, waitlist] = await Promise.all([
+    const [reminders, reservations, waitlist] = await Promise.all([
+      db.guestReminder?.deleteMany() ?? { count: 0 },
       db.reservation.deleteMany(),
       db.waitlistSignup.deleteMany(),
     ]);
@@ -30,6 +31,7 @@ export async function POST(request: Request) {
     return NextResponse.json({
       ok: true,
       deleted: {
+        reminders: reminders.count,
         reservations: reservations.count,
         waitlist: waitlist.count,
       },

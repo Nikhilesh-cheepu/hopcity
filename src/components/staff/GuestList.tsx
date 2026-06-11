@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { getSpecialOccasionLabel, hasSpecialOccasion } from "@/data/occasions";
 import { BOOKING_SOURCES, VENUES } from "@/data/venues";
 import {
   formatTime,
@@ -165,6 +166,11 @@ function GuestListResults({
               <span className="inline-block rounded-full border border-sky-500/30 bg-sky-500/10 px-2.5 py-0.5 text-[0.65rem] font-medium uppercase tracking-wide text-sky-300">
                 {reservationBookingSourceLabel(r.bookingSource)}
               </span>
+              {hasSpecialOccasion(r.specialOccasion) && (
+                <span className="inline-block rounded-full border border-amber-500/30 bg-amber-500/10 px-2.5 py-0.5 text-[0.65rem] font-medium uppercase tracking-wide text-amber-200">
+                  {getSpecialOccasionLabel(r.specialOccasion, r.specialOccasionLabel)}
+                </span>
+              )}
               <span
                 className={`inline-block rounded-full border px-2.5 py-0.5 text-[0.65rem] font-medium uppercase tracking-wide ${
                   getServiceWindow(r.createdAt) === "dinner"

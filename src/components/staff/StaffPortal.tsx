@@ -4,11 +4,12 @@ import { useState, type ReactNode } from "react";
 import { todayDateString } from "@/data/venues";
 import { ClearDataButton } from "./ClearDataButton";
 import { EntryForm } from "./EntryForm";
+import { FollowUpTab } from "./FollowUpTab";
 import { GuestList } from "./GuestList";
 import { SendReportButton } from "./SendReportButton";
 import { TodayStats } from "./TodayStats";
 
-type Tab = "entry" | "guests";
+type Tab = "entry" | "guests" | "followup";
 
 const dateInputClass =
   "w-full rounded-lg border border-hop-green/20 bg-black/50 px-3 py-2 text-sm text-hop-white outline-none focus:border-hop-green/50 focus:shadow-[0_0_16px_rgba(116,194,116,0.12)]";
@@ -94,13 +95,16 @@ export function StaffPortal() {
           Entry
         </TabButton>
         <TabButton active={tab === "guests"} onClick={() => setTab("guests")}>
-          Guest List
+          Guests
+        </TabButton>
+        <TabButton active={tab === "followup"} onClick={() => setTab("followup")}>
+          Follow-up
         </TabButton>
       </div>
 
       {tab === "entry" ? (
         <EntryForm date={dateFrom} onSuccess={handleEntrySuccess} />
-      ) : (
+      ) : tab === "guests" ? (
         <>
           <TodayStats
             key={`stats-${refreshKey}-${dateFrom}-${dateTo}`}
@@ -115,6 +119,13 @@ export function StaffPortal() {
           />
           <ClearDataButton onCleared={() => setRefreshKey((k) => k + 1)} />
         </>
+      ) : (
+        <FollowUpTab
+          key={`followup-${refreshKey}-${dateFrom}-${dateTo}`}
+          from={dateFrom}
+          to={dateTo}
+          refreshKey={refreshKey}
+        />
       )}
     </div>
   );

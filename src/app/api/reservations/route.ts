@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { formatOtherOccasionLabel, SPECIAL_OCCASIONS } from "@/data/occasions";
 import {
   BOOKING_SOURCES,
   ENTRY_TYPES,
@@ -19,6 +20,8 @@ function serialize(r: {
   staffType: string;
   entryType: string;
   bookingSource?: string | null;
+  specialOccasion?: string | null;
+  specialOccasionLabel?: string | null;
   guestName: string;
   mobileNo: string;
   partySize: number;
@@ -31,6 +34,8 @@ function serialize(r: {
     staffType: r.staffType,
     entryType: r.entryType,
     bookingSource: r.bookingSource ?? "direct",
+    specialOccasion: r.specialOccasion ?? "none",
+    specialOccasionLabel: r.specialOccasionLabel ?? null,
     guestName: r.guestName,
     mobileNo: r.mobileNo,
     partySize: r.partySize,
@@ -63,6 +68,8 @@ export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const venue = searchParams.get("venue");
   const bookingSource = searchParams.get("bookingSource");
+  const specialOccasion = searchParams.get("specialOccasion");
+  const hasOccasion = searchParams.get("hasOccasion") === "true";
   const dateFilter = resolveDateFilter(searchParams);
 
   if (!dateFilter) {
@@ -81,6 +88,10 @@ export async function GET(request: Request) {
           ? bookingSource === "other"
             ? { bookingSource: { startsWith: "other:" } }
             : { bookingSource }
+          : {}),
+        ...(hasOccasion ? { specialOccasion: { not: "none" } } : {}),
+        ...(specialOccasion && specialOccasion !== "all"
+          ? { specialOccasion }
           : {}),
       },
       orderBy: [{ visitDate: "desc" }, { createdAt: "desc" }],
@@ -111,6 +122,11 @@ export async function POST(request: Request) {
     const partySize = Number(body.partySize);
     const venue = typeof body.venue === "string" ? body.venue.trim() : "";
     const visitDateStr = typeof body.visitDate === "string" ? body.visitDate : "";
+    const hasOccasionInput = body.hasSpecialOccasion === true;
+    const specialOccasionRaw =
+      typeof body.specialOccasion === "string" ? body.specialOccasion.trim() : "none";
+    const specialOccasionOther =
+      typeof body.specialOccasionOther === "string" ? body.specialOccasionOther.trim() : "";
 
     if (!staffType || !guestName || !venue || !visitDateStr) {
       return NextResponse.json({ error: "Please fill all required fields." }, { status: 400 });
@@ -154,11 +170,33 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Invalid venue selected." }, { status: 400 });
     }
 
+    let specialOccasion = "none";
+    let specialOccasionLabel: string | null = null;
+
+    if (hasOccasionInput) {
+      if (specialOccasionRaw === "other") {
+        if (!specialOccasionOther || specialOccasionOther.length > 40) {
+          return NextResponse.json(
+            { error: "Please describe the occasion (max 40 characters)." },
+            { status: 400 },
+          );
+        }
+        specialOccasion = "other";
+        specialOccasionLabel = formatOtherOccasionLabel(specialOccasionOther);
+      } else if (SPECIAL_OCCASIONS.some((o) => o.id === specialOccasionRaw)) {
+        specialOccasion = specialOccasionRaw;
+      } else {
+        return NextResponse.json({ error: "Invalid special occasion." }, { status: 400 });
+      }
+    }
+
     const row = await db.reservation.create({
       data: {
         staffType,
         entryType,
         bookingSource,
+        specialOccasion,
+        specialOccasionLabel,
         guestName,
         mobileNo: mobileRaw,
         partySize,

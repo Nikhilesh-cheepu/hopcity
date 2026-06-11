@@ -14,20 +14,43 @@ model WaitlistSignup {
 }
 
 model Reservation {
-  id            String   @id @default(cuid())
-  staffType     String
-  entryType     String   @default("walkin")
-  bookingSource String   @default("direct")
-  guestName     String
-  mobileNo      String
-  partySize     Int
-  venue         String
-  visitDate     DateTime @db.Date
-  createdAt     DateTime @default(now())
+  id                   String   @id @default(cuid())
+  staffType            String
+  entryType            String   @default("walkin")
+  bookingSource        String   @default("direct")
+  specialOccasion      String   @default("none")
+  specialOccasionLabel String?
+  guestName            String
+  mobileNo             String
+  partySize            Int
+  venue                String
+  visitDate            DateTime @db.Date
+  createdAt            DateTime @default(now())
+  reminders            GuestReminder[]
 
   @@index([visitDate])
   @@index([venue])
   @@index([visitDate, venue])
   @@index([entryType])
   @@index([bookingSource])
+  @@index([specialOccasion])
+}
+
+model GuestReminder {
+  id                   String    @id @default(cuid())
+  reservationId        String?
+  reservation          Reservation? @relation(fields: [reservationId], references: [id], onDelete: SetNull)
+  guestName            String
+  mobileNo             String
+  venue                String?
+  specialOccasion      String?
+  specialOccasionLabel String?
+  remindAt             DateTime
+  note                 String?
+  status               String    @default("pending")
+  createdAt            DateTime  @default(now())
+  completedAt          DateTime?
+
+  @@index([status, remindAt])
+  @@index([reservationId])
 }

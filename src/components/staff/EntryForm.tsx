@@ -1,6 +1,7 @@
 "use client";
 
 import { FormEvent, useState } from "react";
+import { SPECIAL_OCCASIONS, type SpecialOccasionId } from "@/data/occasions";
 import {
   ENTRY_TYPES,
   RESERVED_BOOKING_SOURCES,
@@ -35,6 +36,9 @@ export function EntryForm({
   const [mobileNo, setMobileNo] = useState("");
   const [partySize, setPartySize] = useState("2");
   const [venue, setVenue] = useState<VenueId>(VENUES[0].id);
+  const [hasSpecialOccasion, setHasSpecialOccasion] = useState(false);
+  const [specialOccasion, setSpecialOccasion] = useState<SpecialOccasionId>("birthday");
+  const [specialOccasionOther, setSpecialOccasionOther] = useState("");
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
   const [message, setMessage] = useState("");
 
@@ -69,6 +73,12 @@ export function EntryForm({
           partySize: Number(partySize),
           venue,
           visitDate: date,
+          hasSpecialOccasion,
+          specialOccasion: hasSpecialOccasion ? specialOccasion : "none",
+          specialOccasionOther:
+            hasSpecialOccasion && specialOccasion === "other"
+              ? specialOccasionOther.trim()
+              : undefined,
         }),
       });
 
@@ -257,6 +267,54 @@ export function EntryForm({
               ))}
             </select>
           </div>
+        </div>
+
+        <div>
+          <button
+            type="button"
+            onClick={() => {
+              setHasSpecialOccasion((v) => !v);
+              if (hasSpecialOccasion) setSpecialOccasionOther("");
+            }}
+            className="text-sm font-medium text-[#74c274]/80 transition hover:text-[#74c274]"
+          >
+            {hasSpecialOccasion ? "− Remove special occasion" : "+ Special occasion? (optional)"}
+          </button>
+
+          {hasSpecialOccasion && (
+            <div className="mt-3 space-y-3 rounded-xl border border-amber-500/20 bg-amber-500/5 p-3">
+              <div className="grid grid-cols-3 gap-2">
+                {SPECIAL_OCCASIONS.map((o) => (
+                  <button
+                    key={o.id}
+                    type="button"
+                    onClick={() => {
+                      setSpecialOccasion(o.id);
+                      if (o.id !== "other") setSpecialOccasionOther("");
+                    }}
+                    className={`min-h-10 rounded-lg border text-xs font-semibold transition ${
+                      specialOccasion === o.id
+                        ? "border-amber-400/50 bg-amber-500/15 text-amber-200"
+                        : "border-white/10 bg-black/30 text-hop-white/45"
+                    }`}
+                  >
+                    {o.label}
+                  </button>
+                ))}
+              </div>
+              {specialOccasion === "other" && (
+                <input
+                  type="text"
+                  value={specialOccasionOther}
+                  onChange={(e) => setSpecialOccasionOther(e.target.value)}
+                  placeholder="e.g. Promotion, proposal"
+                  required
+                  maxLength={40}
+                  className={inputClass}
+                />
+              )}
+            </div>
+          )}
         </div>
 
         <button

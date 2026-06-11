@@ -8,6 +8,8 @@ export type ReservationRecord = {
   staffType: string;
   entryType: string;
   bookingSource: string;
+  specialOccasion: string;
+  specialOccasionLabel: string | null;
   guestName: string;
   mobileNo: string;
   partySize: number;
