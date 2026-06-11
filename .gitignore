@@ -43,3 +43,7 @@ next-env.d.ts
 
 /src/generated/prisma
 src/generated/
+
+# local screenshots / browser tooling
+.playwright-mcp/
+hopcity-*.png
