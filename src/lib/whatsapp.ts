@@ -1,4 +1,5 @@
-import { VENUES } from "@/data/venues";
+import { getEntryTypeLabel, getVenueLabel, VENUES } from "@/data/venues";
+import { getServiceWindow, serviceWindowShort } from "@/lib/service-windows";
 import {
   formatDateRangeLabel,
   formatTime,
@@ -77,6 +78,40 @@ export function buildStaffReportMessage({
   lines.push("", "— Hopcity Staff Portal");
 
   return lines.join("\n");
+}
+
+export function buildGuestWelcomeMessage({
+  guestName,
+  partySize,
+  venue,
+  entryType,
+}: {
+  guestName: string;
+  partySize: number;
+  venue: string;
+  entryType: string;
+}): string {
+  const venueLabel = getVenueLabel(venue);
+  const typeLabel = getEntryTypeLabel(entryType);
+  const windowLabel = serviceWindowShort(getServiceWindow(new Date().toISOString()));
+
+  return `Hello ${guestName}! 👋
+
+Welcome to *Hopcity Brew Co.* — we're delighted to have you with us today!
+
+✅ *Check-in confirmed*
+• Party of ${partySize} guest${partySize > 1 ? "s" : ""}
+• Venue: ${venueLabel}
+• ${typeLabel} · ${windowLabel} service
+
+*"The World in Your Glass"* 🍺
+Twelve iconic beers from around the world, each paired with a chef-crafted bite — a sensory journey awaits you.
+
+📍 Sarath City Capital Mall, 5th Floor, Hyderabad
+
+Wishing you a wonderful experience. Happy hopping! 🥂
+
+— Team Hopcity`;
 }
 
 export function whatsAppUrl(mobileNo: string, message: string): string {

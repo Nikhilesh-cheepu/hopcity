@@ -9,6 +9,7 @@ import {
   type StaffType,
   type VenueId,
 } from "@/data/venues";
+import { buildGuestWelcomeMessage, whatsAppUrl } from "@/lib/whatsapp";
 import { GlassCard } from "./GlassCard";
 
 const inputClass =
@@ -61,18 +62,22 @@ export function EntryForm({
         return;
       }
 
-      setStatus("success");
-      setMessage(`${guestName} checked in successfully.`);
-      setGuestName("");
-      setMobileNo("");
-      setPartySize("2");
-      setEntryType("walkin");
+      const savedName = guestName.trim();
+      const savedMobile = mobileNo.replace(/\D/g, "");
+      const savedPartySize = Number(partySize);
+      const savedVenue = venue;
+      const savedEntryType = entryType;
+
       onSuccess();
 
-      setTimeout(() => {
-        setStatus("idle");
-        setMessage("");
-      }, 2500);
+      const welcomeMessage = buildGuestWelcomeMessage({
+        guestName: savedName,
+        partySize: savedPartySize,
+        venue: savedVenue,
+        entryType: savedEntryType,
+      });
+
+      window.location.href = whatsAppUrl(savedMobile, welcomeMessage);
     } catch {
       setStatus("error");
       setMessage("Network error. Try again.");
@@ -197,8 +202,12 @@ export function EntryForm({
           disabled={status === "loading"}
           className="hop-btn-primary min-h-13 w-full rounded-xl py-3.5 text-base tracking-wide transition active:scale-[0.98]"
         >
-          {status === "loading" ? "Saving…" : "Check In Guest"}
+          {status === "loading" ? "Checking in…" : "Check In Guest"}
         </button>
+
+        <p className="text-center text-[0.65rem] text-hop-white/35">
+          Saves entry & opens WhatsApp welcome message to guest
+        </p>
 
         {message && (
           <p
