@@ -95,23 +95,19 @@ export function buildGuestWelcomeMessage({
   const typeLabel = getEntryTypeLabel(entryType);
   const windowLabel = serviceWindowShort(getServiceWindow(new Date().toISOString()));
 
-  return `Hello ${guestName}! 👋
+  return `Hello ${guestName}!
 
-Welcome to *Hopcity Brew Co.* — we're delighted to have you with us today!
+Welcome to ${venueLabel} — we're delighted to have you with us today.
 
-✅ *Check-in confirmed*
+Check-in confirmed
 • Party of ${partySize} guest${partySize > 1 ? "s" : ""}
-• Venue: ${venueLabel}
 • ${typeLabel} · ${windowLabel} service
 
-*"The World in Your Glass"* 🍺
-Twelve iconic beers from around the world, each paired with a chef-crafted bite — a sensory journey awaits you.
+Sarath City Capital Mall, 5th Floor, Hyderabad
 
-📍 Sarath City Capital Mall, 5th Floor, Hyderabad
+Wishing you a wonderful experience. We hope you have a great time with us.
 
-Wishing you a wonderful experience. Happy hopping! 🥂
-
-— Team Hopcity`;
+— Team ${venueLabel}`;
 }
 
 export function whatsAppUrl(mobileNo: string, message: string): string {
