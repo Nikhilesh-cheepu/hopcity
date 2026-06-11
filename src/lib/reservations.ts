@@ -22,6 +22,11 @@ export function formatVisitDate(dateStr: string): string {
   });
 }
 
+export function formatDateRangeLabel(from: string, to: string): string {
+  if (from === to) return formatVisitDate(from);
+  return `${formatVisitDate(from)} – ${formatVisitDate(to)}`;
+}
+
 export function formatTime(iso: string): string {
   return new Date(iso).toLocaleTimeString("en-IN", {
     hour: "2-digit",
@@ -39,4 +44,13 @@ export function reservationEntryTypeLabel(entryType: string): string {
 
 export function parseVisitDate(dateStr: string): Date {
   return new Date(`${dateStr}T12:00:00.000Z`);
+}
+
+export function parseDateRange(from: string, to: string): { gte: Date; lte: Date } {
+  const gte = parseVisitDate(from);
+  const lte = parseVisitDate(to);
+  if (gte > lte) {
+    throw new Error("Invalid date range");
+  }
+  return { gte, lte };
 }

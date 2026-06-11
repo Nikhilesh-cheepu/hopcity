@@ -1,31 +1,70 @@
-import { getEntryTypeLabel, getVenueLabel } from "@/data/venues";
+import { VENUES } from "@/data/venues";
+import {
+  formatDateRangeLabel,
+  formatTime,
+  reservationEntryTypeLabel,
+  reservationVenueLabel,
+  type ReservationRecord,
+} from "@/lib/reservations";
 
-export function buildGuestWhatsAppMessage({
-  guestName,
-  partySize,
-  venue,
-  entryType,
+export type ReportStats = {
+  totalEntries: number;
+  totalGuests: number;
+  walkins: number;
+  reserved: number;
+  byVenue: Record<string, { entries: number; guests: number }>;
+};
+
+export function buildStaffReportMessage({
+  from,
+  to,
+  stats,
+  reservations,
 }: {
-  guestName: string;
-  partySize: number;
-  venue: string;
-  entryType: string;
+  from: string;
+  to: string;
+  stats: ReportStats;
+  reservations: ReservationRecord[];
 }): string {
-  const venueLabel = getVenueLabel(venue);
-  const typeLabel = getEntryTypeLabel(entryType);
+  const lines: string[] = [
+    "*HOPCITY GUEST REPORT*",
+    formatDateRangeLabel(from, to),
+    "",
+    "*SUMMARY*",
+    `Guests: ${stats.totalGuests}`,
+    `Entries: ${stats.totalEntries}`,
+    `Walk-in: ${stats.walkins} | Reserved: ${stats.reserved}`,
+    "",
+    "*BY VENUE*",
+  ];
 
-  return `Hello ${guestName}! Welcome to Hopcity Brew Co. 🍺
+  for (const v of VENUES) {
+    const row = stats.byVenue[v.id];
+    lines.push(`• ${v.label}: ${row?.guests ?? 0} guests (${row?.entries ?? 0} entries)`);
+  }
 
-Your ${typeLabel.toLowerCase()} for ${partySize} guest${partySize > 1 ? "s" : ""} at ${venueLabel} is confirmed.
+  if (reservations.length > 0) {
+    lines.push("", "*GUEST LIST*");
+    reservations.forEach((r, i) => {
+      lines.push(
+        `${i + 1}. ${r.guestName} | ${r.mobileNo} | ${r.partySize} pax | ${reservationVenueLabel(r.venue)} | ${reservationEntryTypeLabel(r.entryType)} | ${formatTime(r.createdAt)}`,
+      );
+    });
+  } else {
+    lines.push("", "No guest entries in this period.");
+  }
 
-The World in Your Glass — we can't wait to host you!
+  lines.push("", "— Hopcity Staff Portal");
 
-— Hopcity Team
-Sarath City Capital Mall, 5th Floor, Hyderabad`;
+  return lines.join("\n");
 }
 
 export function whatsAppUrl(mobileNo: string, message: string): string {
   const digits = mobileNo.replace(/\D/g, "");
   const phone = digits.length === 10 ? `91${digits}` : digits;
   return `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
+}
+
+export function getReportRecipient(): string {
+  return process.env.NEXT_PUBLIC_STAFF_REPORT_WHATSAPP ?? "7013884485";
 }

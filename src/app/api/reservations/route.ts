@@ -1,7 +1,11 @@
 import { NextResponse } from "next/server";
 import { ENTRY_TYPES, VENUES } from "@/data/venues";
 import { db } from "@/lib/db";
-import { parseVisitDate, type ReservationRecord } from "@/lib/reservations";
+import {
+  parseDateRange,
+  parseVisitDate,
+  type ReservationRecord,
+} from "@/lib/reservations";
 
 const MOBILE_REGEX = /^[6-9]\d{9}$/;
 
@@ -29,26 +33,44 @@ function serialize(r: {
   };
 }
 
+function resolveDateFilter(searchParams: URLSearchParams) {
+  const from = searchParams.get("from");
+  const to = searchParams.get("to");
+  const date = searchParams.get("date");
+
+  if (from && to) {
+    return parseDateRange(from, to);
+  }
+  if (date) {
+    const d = parseVisitDate(date);
+    return { gte: d, lte: d };
+  }
+  return null;
+}
+
 export async function GET(request: Request) {
   if (!db?.reservation) {
     return NextResponse.json({ error: "Database not configured." }, { status: 503 });
   }
 
   const { searchParams } = new URL(request.url);
-  const date = searchParams.get("date");
   const venue = searchParams.get("venue");
+  const dateFilter = resolveDateFilter(searchParams);
 
-  if (!date) {
-    return NextResponse.json({ error: "date is required." }, { status: 400 });
+  if (!dateFilter) {
+    return NextResponse.json(
+      { error: "Provide date or from+to query params." },
+      { status: 400 },
+    );
   }
 
   try {
     const rows = await db.reservation.findMany({
       where: {
-        visitDate: parseVisitDate(date),
+        visitDate: dateFilter,
         ...(venue && venue !== "all" ? { venue } : {}),
       },
-      orderBy: { createdAt: "desc" },
+      orderBy: [{ visitDate: "desc" }, { createdAt: "desc" }],
     });
 
     return NextResponse.json({ reservations: rows.map(serialize) });

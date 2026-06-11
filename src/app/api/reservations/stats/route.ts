@@ -1,7 +1,22 @@
 import { NextResponse } from "next/server";
 import { VENUES } from "@/data/venues";
 import { db } from "@/lib/db";
-import { parseVisitDate } from "@/lib/reservations";
+import { parseDateRange, parseVisitDate } from "@/lib/reservations";
+
+function resolveDateFilter(searchParams: URLSearchParams) {
+  const from = searchParams.get("from");
+  const to = searchParams.get("to");
+  const date = searchParams.get("date");
+
+  if (from && to) {
+    return { range: parseDateRange(from, to), from, to };
+  }
+  if (date) {
+    const d = parseVisitDate(date);
+    return { range: { gte: d, lte: d }, from: date, to: date };
+  }
+  return null;
+}
 
 export async function GET(request: Request) {
   if (!db?.reservation) {
@@ -9,16 +24,18 @@ export async function GET(request: Request) {
   }
 
   const { searchParams } = new URL(request.url);
-  const date = searchParams.get("date");
+  const resolved = resolveDateFilter(searchParams);
 
-  if (!date) {
-    return NextResponse.json({ error: "date is required." }, { status: 400 });
+  if (!resolved) {
+    return NextResponse.json(
+      { error: "Provide date or from+to query params." },
+      { status: 400 },
+    );
   }
 
   try {
-    const visitDate = parseVisitDate(date);
     const rows = await db.reservation.findMany({
-      where: { visitDate },
+      where: { visitDate: resolved.range },
       select: { venue: true, partySize: true, entryType: true },
     });
 
@@ -44,7 +61,8 @@ export async function GET(request: Request) {
     }
 
     return NextResponse.json({
-      date,
+      from: resolved.from,
+      to: resolved.to,
       totalEntries,
       totalGuests,
       walkins,

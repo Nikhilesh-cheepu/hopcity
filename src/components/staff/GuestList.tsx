@@ -9,9 +9,8 @@ import {
   type ReservationRecord,
 } from "@/lib/reservations";
 import { GlassCard } from "./GlassCard";
-import { WhatsAppButton } from "./WhatsAppButton";
 
-export function GuestList({ date }: { date: string }) {
+export function GuestList({ from, to }: { from: string; to: string }) {
   const [venueFilter, setVenueFilter] = useState("all");
 
   return (
@@ -33,8 +32,9 @@ export function GuestList({ date }: { date: string }) {
       </div>
 
       <GuestListResults
-        key={`${date}-${venueFilter}`}
-        date={date}
+        key={`${from}-${to}-${venueFilter}`}
+        from={from}
+        to={to}
         venueFilter={venueFilter}
       />
     </div>
@@ -42,10 +42,12 @@ export function GuestList({ date }: { date: string }) {
 }
 
 function GuestListResults({
-  date,
+  from,
+  to,
   venueFilter,
 }: {
-  date: string;
+  from: string;
+  to: string;
   venueFilter: string;
 }) {
   const [reservations, setReservations] = useState<ReservationRecord[]>([]);
@@ -53,8 +55,7 @@ function GuestListResults({
 
   useEffect(() => {
     let cancelled = false;
-
-    const params = new URLSearchParams({ date });
+    const params = new URLSearchParams({ from, to });
     if (venueFilter !== "all") params.set("venue", venueFilter);
 
     fetch(`/api/reservations?${params}`)
@@ -69,7 +70,7 @@ function GuestListResults({
     return () => {
       cancelled = true;
     };
-  }, [date, venueFilter]);
+  }, [from, to, venueFilter]);
 
   if (loading) {
     return (
@@ -85,7 +86,7 @@ function GuestListResults({
     return (
       <GlassCard>
         <p className="py-6 text-center text-sm text-hop-white/40">
-          No guests for this date{venueFilter !== "all" ? " at this venue" : ""}.
+          No guests for this period{venueFilter !== "all" ? " at this venue" : ""}.
         </p>
       </GlassCard>
     );
@@ -122,25 +123,19 @@ function GuestListResults({
               </div>
             </div>
 
-            <div className="mt-2">
+            <div className="mt-2 flex flex-wrap gap-2">
               <span className="inline-block rounded-full border border-hop-green/30 bg-hop-green/10 px-2.5 py-0.5 text-[0.65rem] font-medium uppercase tracking-wide text-hop-green">
                 {reservationVenueLabel(r.venue)}
               </span>
+              {from !== to && (
+                <span className="text-[0.65rem] text-hop-white/35">{r.visitDate}</span>
+              )}
             </div>
 
             <div className="mt-3 flex items-center justify-between border-t border-white/5 pt-3 text-[0.65rem] text-hop-white/35">
               <span>{r.staffType}</span>
               <span>{formatTime(r.createdAt)}</span>
             </div>
-
-            <WhatsAppButton
-              guestName={r.guestName}
-              mobileNo={r.mobileNo}
-              partySize={r.partySize}
-              venue={r.venue}
-              entryType={r.entryType}
-              className="mt-3 w-full"
-            />
           </GlassCard>
         </li>
       ))}
