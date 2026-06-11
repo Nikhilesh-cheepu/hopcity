@@ -12,7 +12,12 @@ import {
   type ReservationRecord,
 } from "@/lib/reservations";
 import { getServiceWindow } from "@/lib/service-windows";
+import { AddReminderForm } from "./AddReminderForm";
 import { GlassCard } from "./GlassCard";
+import { SetOccasionForm } from "./SetOccasionForm";
+import { WhatsAppIconButton } from "./WhatsAppIconButton";
+
+type ExpandedPanel = { id: string; type: "reminder" | "occasion" } | null;
 
 export function GuestList({ from, to }: { from: string; to: string }) {
   const [venueFilter, setVenueFilter] = useState("all");
@@ -86,6 +91,7 @@ function GuestListResults({
 }) {
   const [reservations, setReservations] = useState<ReservationRecord[]>([]);
   const [loading, setLoading] = useState(true);
+  const [expanded, setExpanded] = useState<ExpandedPanel>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -106,6 +112,17 @@ function GuestListResults({
       cancelled = true;
     };
   }, [from, to, venueFilter, sourceFilter]);
+
+  function updateReservation(updated: ReservationRecord) {
+    setReservations((list) => list.map((r) => (r.id === updated.id ? updated : r)));
+    setExpanded(null);
+  }
+
+  function togglePanel(id: string, type: "reminder" | "occasion") {
+    setExpanded((current) =>
+      current?.id === id && current.type === type ? null : { id, type },
+    );
+  }
 
   if (loading) {
     return (
@@ -133,28 +150,29 @@ function GuestListResults({
       {reservations.map((r) => (
         <li key={r.id}>
           <GlassCard className="!p-4">
-            <div className="flex items-start justify-between gap-3">
+            <div className="flex items-start gap-2">
               <div className="min-w-0 flex-1">
-                <p className="truncate text-base font-semibold text-hop-white">
-                  {r.guestName}
-                </p>
+                <div className="flex items-start justify-between gap-2">
+                  <p className="truncate text-base font-semibold text-hop-white">
+                    {r.guestName}
+                  </p>
+                  <div className="flex shrink-0 items-center gap-2">
+                    <WhatsAppIconButton mobileNo={r.mobileNo} guestName={r.guestName} />
+                    <span
+                      className={`rounded-full border px-2 py-0.5 text-[0.6rem] font-medium uppercase tracking-wide ${
+                        r.entryType === "reserved"
+                          ? "border-hop-green/40 bg-hop-green/15 text-hop-green"
+                          : "border-white/15 bg-white/5 text-hop-white/55"
+                      }`}
+                    >
+                      {reservationEntryTypeLabel(r.entryType)}
+                    </span>
+                  </div>
+                </div>
                 <p className="mt-0.5 text-sm text-hop-white/45">{r.mobileNo}</p>
-              </div>
-              <div className="shrink-0 text-right">
-                <span
-                  className={`inline-block rounded-full border px-2.5 py-0.5 text-[0.65rem] font-medium uppercase tracking-wide ${
-                    r.entryType === "reserved"
-                      ? "border-hop-green/40 bg-hop-green/15 text-hop-green"
-                      : "border-white/15 bg-white/5 text-hop-white/55"
-                  }`}
-                >
-                  {reservationEntryTypeLabel(r.entryType)}
-                </span>
-                <p className="mt-1.5 text-lg font-bold text-hop-green-light">
+                <p className="mt-1 text-lg font-bold text-hop-green-light">
                   {r.partySize}
-                  <span className="ml-1 text-[0.65rem] font-normal text-hop-white/40">
-                    pax
-                  </span>
+                  <span className="ml-1 text-[0.65rem] font-normal text-hop-white/40">pax</span>
                 </p>
               </div>
             </div>
@@ -191,6 +209,48 @@ function GuestListResults({
               <span>{r.staffType}</span>
               <span>{formatTime(r.createdAt)} IST</span>
             </div>
+
+            <div className="mt-2 flex gap-3">
+              <button
+                type="button"
+                onClick={() => togglePanel(r.id, "reminder")}
+                className="text-[0.65rem] font-semibold uppercase tracking-wide text-hop-white/40 transition hover:text-[#74c274]"
+              >
+                {expanded?.id === r.id && expanded.type === "reminder" ? "− Reminder" : "+ Reminder"}
+              </button>
+              <button
+                type="button"
+                onClick={() => togglePanel(r.id, "occasion")}
+                className="text-[0.65rem] font-semibold uppercase tracking-wide text-hop-white/40 transition hover:text-amber-300"
+              >
+                {expanded?.id === r.id && expanded.type === "occasion"
+                  ? "− Occasion"
+                  : hasSpecialOccasion(r.specialOccasion)
+                    ? "Edit occasion"
+                    : "+ Occasion"}
+              </button>
+            </div>
+
+            {expanded?.id === r.id && expanded.type === "reminder" && (
+              <AddReminderForm
+                guestName={r.guestName}
+                mobileNo={r.mobileNo}
+                venue={r.venue}
+                reservationId={r.id}
+                specialOccasion={r.specialOccasion}
+                specialOccasionLabel={r.specialOccasionLabel}
+                onSaved={() => setExpanded(null)}
+                onCancel={() => setExpanded(null)}
+              />
+            )}
+
+            {expanded?.id === r.id && expanded.type === "occasion" && (
+              <SetOccasionForm
+                reservation={r}
+                onSaved={updateReservation}
+                onCancel={() => setExpanded(null)}
+              />
+            )}
           </GlassCard>
         </li>
       ))}

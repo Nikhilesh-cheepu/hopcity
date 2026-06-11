@@ -211,3 +211,58 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Failed to save entry." }, { status: 500 });
   }
 }
+
+export async function PATCH(request: Request) {
+  if (!db?.reservation) {
+    return NextResponse.json({ error: "Database not configured." }, { status: 503 });
+  }
+
+  try {
+    const body = await request.json();
+    const id = typeof body.id === "string" ? body.id.trim() : "";
+    const hasOccasionInput = body.hasSpecialOccasion === true;
+    const clearOccasion = body.hasSpecialOccasion === false;
+    const specialOccasionRaw =
+      typeof body.specialOccasion === "string" ? body.specialOccasion.trim() : "none";
+    const specialOccasionOther =
+      typeof body.specialOccasionOther === "string" ? body.specialOccasionOther.trim() : "";
+
+    if (!id) {
+      return NextResponse.json({ error: "Reservation id required." }, { status: 400 });
+    }
+
+    let specialOccasion = "none";
+    let specialOccasionLabel: string | null = null;
+
+    if (hasOccasionInput) {
+      if (specialOccasionRaw === "other") {
+        if (!specialOccasionOther || specialOccasionOther.length > 40) {
+          return NextResponse.json(
+            { error: "Please describe the occasion (max 40 characters)." },
+            { status: 400 },
+          );
+        }
+        specialOccasion = "other";
+        specialOccasionLabel = formatOtherOccasionLabel(specialOccasionOther);
+      } else if (SPECIAL_OCCASIONS.some((o) => o.id === specialOccasionRaw)) {
+        specialOccasion = specialOccasionRaw;
+      } else {
+        return NextResponse.json({ error: "Invalid special occasion." }, { status: 400 });
+      }
+    } else if (!clearOccasion) {
+      return NextResponse.json({ error: "Invalid occasion update." }, { status: 400 });
+    }
+
+    const row = await db.reservation.update({
+      where: { id },
+      data: clearOccasion
+        ? { specialOccasion: "none", specialOccasionLabel: null }
+        : { specialOccasion, specialOccasionLabel },
+    });
+
+    return NextResponse.json({ reservation: serialize(row) });
+  } catch (error) {
+    console.error("Reservation update error:", error);
+    return NextResponse.json({ error: "Failed to update entry." }, { status: 500 });
+  }
+}

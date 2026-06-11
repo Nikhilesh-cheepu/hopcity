@@ -18,6 +18,7 @@ import { whatsAppUrl } from "@/lib/whatsapp";
 import { AddReminderForm } from "./AddReminderForm";
 import { GlassCard } from "./GlassCard";
 import { WhatsAppActions } from "./WhatsAppActions";
+import { WhatsAppIconButton } from "./WhatsAppIconButton";
 
 type Section = "occasions" | "reminders";
 
@@ -133,10 +134,11 @@ function OccasionList({ from, to }: { from: string; to: string }) {
             <li key={r.id}>
               <GlassCard className="!p-4">
                 <div className="flex items-start justify-between gap-2">
-                  <div className="min-w-0">
+                  <div className="min-w-0 flex-1">
                     <p className="truncate font-semibold text-hop-white">{r.guestName}</p>
                     <p className="text-sm text-hop-white/45">{r.mobileNo}</p>
                   </div>
+                  <WhatsAppIconButton mobileNo={r.mobileNo} guestName={r.guestName} />
                   <span className="shrink-0 rounded-full border border-amber-500/35 bg-amber-500/10 px-2.5 py-0.5 text-[0.65rem] font-medium text-amber-200">
                     {getSpecialOccasionLabel(r.specialOccasion, r.specialOccasionLabel)}
                   </span>
