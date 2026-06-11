@@ -46,4 +46,4 @@ src/generated/
 
 # local screenshots / browser tooling
 .playwright-mcp/
-hopcity-*.png
+/hopcity-*.png
