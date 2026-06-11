@@ -1,6 +1,11 @@
 "use client";
 
 import { FormEvent, useState } from "react";
+import {
+  DateTimePicker,
+  reminderDateTimeToISO,
+  useReminderDateTimeDefaults,
+} from "./DateTimePicker";
 
 const inputClass =
   "min-h-10 w-full rounded-lg border border-hop-green/20 bg-black/50 px-3 py-2 text-sm text-hop-white outline-none focus:border-hop-green/50";
@@ -24,7 +29,9 @@ export function AddReminderForm({
   onSaved: () => void;
   onCancel: () => void;
 }) {
-  const [remindAt, setRemindAt] = useState("");
+  const defaults = useReminderDateTimeDefaults();
+  const [remindDate, setRemindDate] = useState(defaults.date);
+  const [remindTime, setRemindTime] = useState(defaults.time);
   const [note, setNote] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -45,7 +52,7 @@ export function AddReminderForm({
           reservationId,
           specialOccasion,
           specialOccasionLabel,
-          remindAt: new Date(remindAt).toISOString(),
+          remindAt: reminderDateTimeToISO(remindDate, remindTime),
           note: note.trim() || undefined,
         }),
       });
@@ -63,17 +70,18 @@ export function AddReminderForm({
   }
 
   return (
-    <form onSubmit={handleSubmit} className="mt-3 space-y-2 rounded-lg border border-white/8 bg-black/30 p-3">
+    <form onSubmit={handleSubmit} className="mt-3 space-y-3 rounded-lg border border-white/8 bg-black/30 p-3">
       <p className="text-[0.6rem] font-semibold uppercase tracking-wide text-hop-white/40">
         Add reminder
       </p>
-      <input
-        type="datetime-local"
-        value={remindAt}
-        onChange={(e) => setRemindAt(e.target.value)}
-        required
-        className={inputClass}
+
+      <DateTimePicker
+        date={remindDate}
+        time={remindTime}
+        onDateChange={setRemindDate}
+        onTimeChange={setRemindTime}
       />
+
       <input
         type="text"
         value={note}
@@ -82,6 +90,7 @@ export function AddReminderForm({
         maxLength={120}
         className={inputClass}
       />
+
       <div className="flex gap-2">
         <button
           type="button"

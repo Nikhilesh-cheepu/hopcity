@@ -1,3 +1,4 @@
+import { formatHelpContactLine } from "@/data/venue-contact";
 import { BOOKING_SOURCES, getVenueLabel, VENUES } from "@/data/venues";
 import {
   formatDateRangeLabel,
@@ -112,6 +113,8 @@ Your check-in is confirmed at *${checkInTime}* for a party of ${partySize} ${gue
 Sarath City Capital Mall, 5th Floor, Hyderabad
 
 Make yourself comfortable and enjoy every moment — our team is here to take great care of you.
+
+${formatHelpContactLine()}
 
 With warm wishes,
 Team ${venueLabel}`;

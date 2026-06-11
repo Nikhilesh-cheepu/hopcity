@@ -3,6 +3,7 @@
 import { useState, type ReactNode } from "react";
 import { todayDateString } from "@/data/venues";
 import { ClearDataButton } from "./ClearDataButton";
+import { DateField, DateRangeFields } from "./DateField";
 import { EntryForm } from "./EntryForm";
 import { FollowUpTab } from "./FollowUpTab";
 import { GuestList } from "./GuestList";
@@ -10,9 +11,6 @@ import { SendReportButton } from "./SendReportButton";
 import { TodayStats } from "./TodayStats";
 
 type Tab = "entry" | "guests" | "followup";
-
-const dateInputClass =
-  "w-full rounded-lg border border-hop-green/20 bg-black/50 px-3 py-2 text-sm text-hop-white outline-none focus:border-hop-green/50 focus:shadow-[0_0_16px_rgba(116,194,116,0.12)]";
 
 export function StaffPortal() {
   const [tab, setTab] = useState<Tab>("entry");
@@ -51,42 +49,18 @@ export function StaffPortal() {
           {tab === "entry" ? "Entry Date" : "Date Range"}
         </p>
         {tab === "entry" ? (
-          <input
-            id="entryDate"
-            type="date"
+          <DateField
             value={dateFrom}
-            onChange={(e) => handleFromChange(e.target.value)}
-            className={dateInputClass}
+            onChange={handleFromChange}
+            quickPicks={["today", "tomorrow"]}
           />
         ) : (
-          <div className="grid grid-cols-2 gap-3">
-            <div>
-              <label htmlFor="dateFrom" className="mb-1 block text-[0.6rem] text-hop-white/40">
-                From
-              </label>
-              <input
-                id="dateFrom"
-                type="date"
-                value={dateFrom}
-                max={dateTo}
-                onChange={(e) => handleFromChange(e.target.value)}
-                className={dateInputClass}
-              />
-            </div>
-            <div>
-              <label htmlFor="dateTo" className="mb-1 block text-[0.6rem] text-hop-white/40">
-                To
-              </label>
-              <input
-                id="dateTo"
-                type="date"
-                value={dateTo}
-                min={dateFrom}
-                onChange={(e) => handleToChange(e.target.value)}
-                className={dateInputClass}
-              />
-            </div>
-          </div>
+          <DateRangeFields
+            from={dateFrom}
+            to={dateTo}
+            onFromChange={handleFromChange}
+            onToChange={handleToChange}
+          />
         )}
       </div>
 
