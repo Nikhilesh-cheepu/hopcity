@@ -158,7 +158,7 @@ function VenueChip({
       onClick={onClick}
       className={`shrink-0 rounded-full px-4 py-2 text-xs font-semibold uppercase tracking-wide transition ${
         active
-          ? "border border-hop-green/50 bg-hop-green/20 text-hop-green-light shadow-[0_0_20px_rgba(116,194,116,0.2)]"
+          ? "border border-[#74c274] bg-[#74c274]/20 text-[#85d985] shadow-[0_0_20px_rgba(116,194,116,0.3)]"
           : "border border-white/10 bg-white/5 text-hop-white/50 hover:border-hop-green/25"
       }`}
     >

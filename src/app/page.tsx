@@ -11,8 +11,8 @@ export default function Home() {
       <main className="relative z-10 flex w-full max-w-lg flex-col items-center text-center sm:max-w-xl lg:max-w-2xl">
         <HopLogo />
 
-        <div className="mt-6 inline-flex items-center rounded-full border border-hop-green/40 bg-hop-green/10 px-4 py-1.5 sm:mt-8 sm:px-5">
-          <span className="text-[0.65rem] font-semibold uppercase tracking-[0.28em] text-hop-green sm:text-xs">
+        <div className="hop-badge mt-6 inline-flex items-center rounded-full px-4 py-1.5 sm:mt-8 sm:px-5">
+          <span className="text-[0.65rem] font-bold uppercase tracking-[0.28em] sm:text-xs">
             Coming Soon
           </span>
         </div>

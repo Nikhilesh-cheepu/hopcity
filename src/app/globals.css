@@ -3,8 +3,8 @@
 :root {
   --hop-black: #000000;
   --hop-green: #74c274;
-  --hop-green-light: #92d692;
-  --hop-green-dark: #5daa5d;
+  --hop-green-light: #85d985;
+  --hop-green-dark: #5fb85f;
   --hop-white: #ffffff;
   --background: var(--hop-black);
   --foreground: var(--hop-white);
@@ -13,11 +13,11 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --color-hop-black: var(--hop-black);
-  --color-hop-green: var(--hop-green);
-  --color-hop-green-light: var(--hop-green-light);
-  --color-hop-green-dark: var(--hop-green-dark);
-  --color-hop-white: var(--hop-white);
+  --color-hop-black: #000000;
+  --color-hop-green: #74c274;
+  --color-hop-green-light: #85d985;
+  --color-hop-green-dark: #5fb85f;
+  --color-hop-white: #ffffff;
   --font-sans: var(--font-dm-sans);
   --animate-pulse-slow: pulse-slow 5s ease-in-out infinite;
 }
@@ -49,4 +49,43 @@ body {
   opacity: 0.03;
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   z-index: 50;
+}
+
+/* Solid brand green — matches logo #74c274 exactly */
+.hop-btn-primary {
+  background-color: #74c274;
+  color: #000000;
+  font-weight: 700;
+  box-shadow:
+    0 4px 24px rgba(116, 194, 116, 0.55),
+    inset 0 1px 0 rgba(255, 255, 255, 0.25);
+}
+
+.hop-btn-primary:hover:not(:disabled) {
+  background-color: #85d985;
+  box-shadow:
+    0 6px 32px rgba(116, 194, 116, 0.65),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+
+.hop-btn-primary:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.hop-tab-active {
+  background-color: #74c274;
+  color: #000000;
+  font-weight: 700;
+  box-shadow: 0 4px 20px rgba(116, 194, 116, 0.5);
+}
+
+.hop-badge {
+  border: 1px solid #74c274;
+  color: #74c274;
+  background-color: rgba(116, 194, 116, 0.12);
+}
+
+.hop-text-brand {
+  color: #74c274;
 }

@@ -36,7 +36,7 @@ export function StaffPortal() {
   return (
     <div className="mx-auto w-full max-w-lg space-y-4 pb-8 sm:max-w-xl lg:max-w-2xl">
       <header className="text-center">
-        <p className="text-[0.65rem] font-semibold uppercase tracking-[0.28em] text-hop-green">
+        <p className="hop-text-brand text-[0.65rem] font-semibold uppercase tracking-[0.28em]">
           Staff Portal
         </p>
         <h1 className="mt-1 text-xl font-bold text-hop-white sm:text-2xl">
@@ -133,7 +133,7 @@ function TabButton({
       onClick={onClick}
       className={`flex-1 rounded-xl py-3 text-sm font-semibold uppercase tracking-[0.12em] transition ${
         active
-          ? "bg-hop-green text-hop-black shadow-[0_4px_20px_rgba(116,194,116,0.35)]"
+          ? "hop-tab-active"
           : "text-hop-white/45 hover:text-hop-white/70"
       }`}
     >

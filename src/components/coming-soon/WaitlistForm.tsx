@@ -62,7 +62,7 @@ export function WaitlistForm() {
         <button
           type="submit"
           disabled={status === "loading" || status === "success"}
-          className="min-h-12 w-full shrink-0 rounded-full bg-hop-green px-6 py-3 text-base font-semibold tracking-wide text-hop-black transition active:scale-[0.98] hover:bg-hop-green-light disabled:cursor-not-allowed disabled:opacity-60 md:w-auto"
+          className="hop-btn-primary min-h-12 w-full shrink-0 rounded-full px-6 py-3 text-base tracking-wide transition active:scale-[0.98] md:w-auto"
         >
           {status === "loading" ? "Joining…" : "Notify Me"}
         </button>
