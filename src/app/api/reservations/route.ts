@@ -1,5 +1,10 @@
 import { NextResponse } from "next/server";
-import { BOOKING_SOURCES, ENTRY_TYPES, VENUES } from "@/data/venues";
+import {
+  BOOKING_SOURCES,
+  ENTRY_TYPES,
+  formatOtherBookingSource,
+  VENUES,
+} from "@/data/venues";
 import { db } from "@/lib/db";
 import {
   parseDateRange,
@@ -72,7 +77,11 @@ export async function GET(request: Request) {
       where: {
         visitDate: dateFilter,
         ...(venue && venue !== "all" ? { venue } : {}),
-        ...(bookingSource && bookingSource !== "all" ? { bookingSource } : {}),
+        ...(bookingSource && bookingSource !== "all"
+          ? bookingSource === "other"
+            ? { bookingSource: { startsWith: "other:" } }
+            : { bookingSource }
+          : {}),
       },
       orderBy: [{ visitDate: "desc" }, { createdAt: "desc" }],
     });
@@ -93,8 +102,10 @@ export async function POST(request: Request) {
     const body = await request.json();
     const staffType = typeof body.staffType === "string" ? body.staffType.trim() : "";
     const entryType = typeof body.entryType === "string" ? body.entryType.trim() : "walkin";
-    const bookingSource =
+    const bookingSourceRaw =
       typeof body.bookingSource === "string" ? body.bookingSource.trim() : "direct";
+    const bookingSourceOther =
+      typeof body.bookingSourceOther === "string" ? body.bookingSourceOther.trim() : "";
     const guestName = typeof body.guestName === "string" ? body.guestName.trim() : "";
     const mobileRaw = typeof body.mobileNo === "string" ? body.mobileNo.replace(/\D/g, "") : "";
     const partySize = Number(body.partySize);
@@ -109,8 +120,20 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Invalid entry type." }, { status: 400 });
     }
 
-    if (!BOOKING_SOURCES.some((s) => s.id === bookingSource)) {
-      return NextResponse.json({ error: "Invalid booking source." }, { status: 400 });
+    let bookingSource = entryType === "walkin" ? "direct" : bookingSourceRaw;
+
+    if (entryType === "reserved") {
+      if (bookingSource === "other") {
+        if (!bookingSourceOther || bookingSourceOther.length > 40) {
+          return NextResponse.json(
+            { error: "Please enter where the reservation is from (max 40 characters)." },
+            { status: 400 },
+          );
+        }
+        bookingSource = formatOtherBookingSource(bookingSourceOther);
+      } else if (!BOOKING_SOURCES.some((s) => s.id === bookingSource && s.id !== "direct")) {
+        return NextResponse.json({ error: "Invalid booking source." }, { status: 400 });
+      }
     }
 
     if (!MOBILE_REGEX.test(mobileRaw)) {

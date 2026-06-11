@@ -2,12 +2,12 @@
 
 import { FormEvent, useState } from "react";
 import {
-  BOOKING_SOURCES,
   ENTRY_TYPES,
+  RESERVED_BOOKING_SOURCES,
   STAFF_TYPES,
   VENUES,
-  type BookingSource,
   type EntryType,
+  type ReservedBookingSource,
   type StaffType,
   type VenueId,
 } from "@/data/venues";
@@ -29,13 +29,23 @@ export function EntryForm({
 }) {
   const [staffType, setStaffType] = useState<StaffType>(STAFF_TYPES[0]);
   const [entryType, setEntryType] = useState<EntryType>("walkin");
-  const [bookingSource, setBookingSource] = useState<BookingSource>("direct");
+  const [bookingSource, setBookingSource] = useState<ReservedBookingSource>("call");
+  const [otherSourceText, setOtherSourceText] = useState("");
   const [guestName, setGuestName] = useState("");
   const [mobileNo, setMobileNo] = useState("");
   const [partySize, setPartySize] = useState("2");
   const [venue, setVenue] = useState<VenueId>(VENUES[0].id);
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
   const [message, setMessage] = useState("");
+
+  function handleEntryTypeChange(next: EntryType) {
+    setEntryType(next);
+    if (next === "walkin") {
+      setOtherSourceText("");
+    } else {
+      setBookingSource("call");
+    }
+  }
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
@@ -49,7 +59,11 @@ export function EntryForm({
         body: JSON.stringify({
           staffType,
           entryType,
-          bookingSource,
+          bookingSource: entryType === "reserved" ? bookingSource : "direct",
+          bookingSourceOther:
+            entryType === "reserved" && bookingSource === "other"
+              ? otherSourceText.trim()
+              : undefined,
           guestName,
           mobileNo,
           partySize: Number(partySize),
@@ -102,7 +116,7 @@ export function EntryForm({
               <button
                 key={t.id}
                 type="button"
-                onClick={() => setEntryType(t.id)}
+                onClick={() => handleEntryTypeChange(t.id)}
                 className={`min-h-11 rounded-xl border text-sm font-semibold transition ${
                   entryType === t.id
                     ? "border-[#74c274] bg-[#74c274]/20 text-[#74c274] shadow-[0_0_16px_rgba(116,194,116,0.25)]"
@@ -115,25 +129,49 @@ export function EntryForm({
           </div>
         </div>
 
-        <div>
-          <span className={labelClass}>Reservation Source</span>
-          <div className="grid grid-cols-3 gap-2 sm:grid-cols-5">
-            {BOOKING_SOURCES.map((s) => (
-              <button
-                key={s.id}
-                type="button"
-                onClick={() => setBookingSource(s.id)}
-                className={`min-h-11 rounded-xl border px-1 text-xs font-semibold transition sm:text-sm ${
-                  bookingSource === s.id
-                    ? "border-[#74c274] bg-[#74c274]/20 text-[#74c274] shadow-[0_0_16px_rgba(116,194,116,0.25)]"
-                    : "border-white/10 bg-black/30 text-hop-white/45"
-                }`}
+        {entryType === "reserved" && (
+          <div className="space-y-3 rounded-xl border border-hop-green/15 bg-black/20 p-3">
+            <div>
+              <label htmlFor="bookingSource" className={labelClass}>
+                Reservation Source
+              </label>
+              <select
+                id="bookingSource"
+                value={bookingSource}
+                onChange={(e) => {
+                  const value = e.target.value as ReservedBookingSource;
+                  setBookingSource(value);
+                  if (value !== "other") setOtherSourceText("");
+                }}
+                className={inputClass}
               >
-                {s.label}
-              </button>
-            ))}
+                {RESERVED_BOOKING_SOURCES.map((s) => (
+                  <option key={s.id} value={s.id} className="bg-hop-black">
+                    {s.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {bookingSource === "other" && (
+              <div>
+                <label htmlFor="otherSourceText" className={labelClass}>
+                  Specify Source
+                </label>
+                <input
+                  id="otherSourceText"
+                  type="text"
+                  value={otherSourceText}
+                  onChange={(e) => setOtherSourceText(e.target.value)}
+                  placeholder="e.g. Instagram, company booking"
+                  required
+                  maxLength={40}
+                  className={inputClass}
+                />
+              </div>
+            )}
           </div>
-        </div>
+        )}
 
         <div>
           <label htmlFor="staffType" className={labelClass}>

@@ -72,9 +72,12 @@ export async function GET(request: Request) {
         byVenue[row.venue].guests += row.partySize;
       }
       addToWindowStats(byWindow, row.createdAt.toISOString(), row.partySize);
-      if (byBookingSource[row.bookingSource]) {
-        byBookingSource[row.bookingSource].entries += 1;
-        byBookingSource[row.bookingSource].guests += row.partySize;
+      const sourceKey = row.bookingSource.startsWith("other:")
+        ? "other"
+        : row.bookingSource;
+      if (byBookingSource[sourceKey]) {
+        byBookingSource[sourceKey].entries += 1;
+        byBookingSource[sourceKey].guests += row.partySize;
       }
     }
 
