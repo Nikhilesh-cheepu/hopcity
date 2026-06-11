@@ -13,8 +13,12 @@ export const metadata: Metadata = {
   description:
     "The World in Your Glass. Hopcity Brew Co. — a world-class brewery experience coming to Sarath City Capital Mall, Hyderabad.",
   icons: {
-    icon: "/brand/favicon.png",
+    icon: [
+      { url: "/brand/favicon-32.png", sizes: "32x32", type: "image/png" },
+      { url: "/brand/favicon.png", sizes: "512x512", type: "image/png" },
+    ],
     apple: "/brand/favicon.png",
+    shortcut: "/brand/favicon-32.png",
   },
   openGraph: {
     title: "Hopcity Brew Co. | Coming Soon",
