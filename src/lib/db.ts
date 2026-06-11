@@ -1,15 +1,10 @@
 import { PrismaPg } from "@prisma/adapter-pg";
 import { Pool } from "pg";
 import { PrismaClient } from "@/generated/prisma/client";
-
-function getDatabaseUrl(): string | undefined {
-  return process.env.NODE_ENV === "development"
-    ? (process.env.DATABASE_PUBLIC_URL ?? process.env.DATABASE_URL)
-    : process.env.DATABASE_URL;
-}
+import { resolveDatabaseUrl } from "@/lib/database-url";
 
 function createPrismaClient(): PrismaClient | null {
-  const url = getDatabaseUrl();
+  const url = resolveDatabaseUrl();
   if (!url) {
     return null;
   }

@@ -24,10 +24,13 @@ Premium coming-soon site for **Hopcity Brew Co.** — Sarath City Capital Mall, 
    cp .env.example .env.local
    ```
 
-   From Railway → your Postgres service → **Variables**:
+   From Railway → your Postgres service → **Connect** → **Public Network**:
 
-   - `DATABASE_URL` — private URL (production / Railway-internal)
-   - `DATABASE_PUBLIC_URL` — public URL (local dev)
+   - `DATABASE_URL` — public Postgres URL (Vercel + local dev)
+   - `DATABASE_PUBLIC_URL` — optional; same public URL for local dev
+
+   **Vercel:** Project → Settings → Environment Variables → set `DATABASE_URL`
+   to the **public** Railway URL. Never use `postgres.railway.internal` on Vercel.
 
 3. **Run database migration**
 
