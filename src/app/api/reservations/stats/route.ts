@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { VENUES } from "@/data/venues";
 import { db } from "@/lib/db";
 import { parseDateRange, parseVisitDate } from "@/lib/reservations";
+import { addToWindowStats, emptyWindowStats } from "@/lib/service-windows";
 
 function resolveDateFilter(searchParams: URLSearchParams) {
   const from = searchParams.get("from");
@@ -36,13 +37,15 @@ export async function GET(request: Request) {
   try {
     const rows = await db.reservation.findMany({
       where: { visitDate: resolved.range },
-      select: { venue: true, partySize: true, entryType: true },
+      select: { venue: true, partySize: true, entryType: true, createdAt: true },
     });
 
     const byVenue: Record<string, { entries: number; guests: number }> = {};
     for (const v of VENUES) {
       byVenue[v.id] = { entries: 0, guests: 0 };
     }
+
+    const byWindow = emptyWindowStats();
 
     let totalEntries = 0;
     let totalGuests = 0;
@@ -58,6 +61,7 @@ export async function GET(request: Request) {
         byVenue[row.venue].entries += 1;
         byVenue[row.venue].guests += row.partySize;
       }
+      addToWindowStats(byWindow, row.createdAt.toISOString(), row.partySize);
     }
 
     return NextResponse.json({
@@ -68,6 +72,7 @@ export async function GET(request: Request) {
       walkins,
       reserved,
       byVenue,
+      byWindow,
     });
   } catch (error) {
     console.error("Reservation stats error:", error);

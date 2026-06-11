@@ -5,9 +5,11 @@ import { VENUES } from "@/data/venues";
 import {
   formatTime,
   reservationEntryTypeLabel,
+  reservationServiceWindowLabel,
   reservationVenueLabel,
   type ReservationRecord,
 } from "@/lib/reservations";
+import { getServiceWindow } from "@/lib/service-windows";
 import { GlassCard } from "./GlassCard";
 
 export function GuestList({ from, to }: { from: string; to: string }) {
@@ -124,8 +126,19 @@ function GuestListResults({
             </div>
 
             <div className="mt-2 flex flex-wrap gap-2">
-              <span className="inline-block rounded-full border border-hop-green/30 bg-hop-green/10 px-2.5 py-0.5 text-[0.65rem] font-medium uppercase tracking-wide text-hop-green">
+              <span className="inline-block rounded-full border border-[#74c274]/30 bg-[#74c274]/10 px-2.5 py-0.5 text-[0.65rem] font-medium uppercase tracking-wide text-[#74c274]">
                 {reservationVenueLabel(r.venue)}
+              </span>
+              <span
+                className={`inline-block rounded-full border px-2.5 py-0.5 text-[0.65rem] font-medium uppercase tracking-wide ${
+                  getServiceWindow(r.createdAt) === "dinner"
+                    ? "border-amber-500/30 bg-amber-500/10 text-amber-300"
+                    : getServiceWindow(r.createdAt) === "lunch"
+                      ? "border-[#74c274]/30 bg-[#74c274]/10 text-[#74c274]"
+                      : "border-white/15 bg-white/5 text-hop-white/45"
+                }`}
+              >
+                {reservationServiceWindowLabel(r.createdAt)}
               </span>
               {from !== to && (
                 <span className="text-[0.65rem] text-hop-white/35">{r.visitDate}</span>
@@ -134,7 +147,7 @@ function GuestListResults({
 
             <div className="mt-3 flex items-center justify-between border-t border-white/5 pt-3 text-[0.65rem] text-hop-white/35">
               <span>{r.staffType}</span>
-              <span>{formatTime(r.createdAt)}</span>
+              <span>{formatTime(r.createdAt)} IST</span>
             </div>
           </GlassCard>
         </li>

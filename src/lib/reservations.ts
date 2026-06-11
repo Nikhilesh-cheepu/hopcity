@@ -1,4 +1,7 @@
 import { getEntryTypeLabel, getVenueLabel } from "@/data/venues";
+import { getServiceWindow, serviceWindowShort, type ServiceWindow } from "@/lib/service-windows";
+
+const IST = "Asia/Kolkata";
 
 export type ReservationRecord = {
   id: string;
@@ -15,6 +18,7 @@ export type ReservationRecord = {
 export function formatVisitDate(dateStr: string): string {
   const d = new Date(`${dateStr}T12:00:00`);
   return d.toLocaleDateString("en-IN", {
+    timeZone: IST,
     weekday: "short",
     day: "numeric",
     month: "short",
@@ -29,9 +33,30 @@ export function formatDateRangeLabel(from: string, to: string): string {
 
 export function formatTime(iso: string): string {
   return new Date(iso).toLocaleTimeString("en-IN", {
+    timeZone: IST,
     hour: "2-digit",
     minute: "2-digit",
+    hour12: true,
   });
+}
+
+export function formatDateTimeIST(iso: string): string {
+  return new Date(iso).toLocaleString("en-IN", {
+    timeZone: IST,
+    day: "numeric",
+    month: "short",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: true,
+  });
+}
+
+export function getReservationServiceWindow(iso: string): ServiceWindow {
+  return getServiceWindow(iso);
+}
+
+export function reservationServiceWindowLabel(iso: string): string {
+  return serviceWindowShort(getServiceWindow(iso));
 }
 
 export function reservationVenueLabel(venue: string): string {
