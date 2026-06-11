@@ -1,5 +1,9 @@
-import "dotenv/config";
+import { config } from "dotenv";
+import { resolve } from "path";
 import { defineConfig } from "prisma/config";
+
+config({ path: resolve(process.cwd(), ".env.local") });
+config();
 
 const databaseUrl =
   process.env.DATABASE_PUBLIC_URL ??
