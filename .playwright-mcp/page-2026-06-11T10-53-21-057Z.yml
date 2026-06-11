@@ -1,0 +1,19 @@
+- generic [active] [ref=e1]:
+  - main [ref=e3]:
+    - img "Hopcity Brew Co." [ref=e6]
+    - generic [ref=e8]: Coming Soon
+    - heading "The World in Your Glass" [level=1] [ref=e9]
+    - paragraph [ref=e10]: Twelve iconic beers from across the globe, each paired with a chef-crafted bite. A sensory journey is brewing at Sarath City.
+    - generic [ref=e12]:
+      - img [ref=e13]
+      - generic [ref=e14]: Sarath City Capital Mall · 5th Floor · Hyderabad
+    - generic [ref=e15]:
+      - paragraph [ref=e16]: Find your world at Hopcity
+      - generic [ref=e19]:
+        - generic [ref=e20]: Email address
+        - textbox "Email address" [ref=e21]:
+          - /placeholder: your@email.com
+        - button "Notify Me" [ref=e22]
+    - generic [ref=e23]: © 2026 Hopcity Brew Co.
+  - button "Open Next.js Dev Tools" [ref=e29] [cursor=pointer]:
+    - img [ref=e30]

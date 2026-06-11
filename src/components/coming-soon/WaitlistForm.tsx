@@ -39,25 +39,30 @@ export function WaitlistForm() {
   }
 
   return (
-    <div className="w-full max-w-md">
-      <form onSubmit={handleSubmit} className="flex flex-col gap-3 sm:flex-row">
+    <div className="w-full">
+      <form
+        onSubmit={handleSubmit}
+        className="flex w-full flex-col gap-3 md:max-w-md md:flex-row md:items-stretch lg:max-w-lg"
+      >
         <label htmlFor="email" className="sr-only">
           Email address
         </label>
         <input
           id="email"
           type="email"
+          inputMode="email"
+          autoComplete="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           placeholder="your@email.com"
           required
           disabled={status === "loading" || status === "success"}
-          className="flex-1 rounded-full border border-hop-gold/25 bg-black/40 px-5 py-3 text-sm text-hop-cream placeholder:text-hop-cream/40 outline-none transition focus:border-hop-gold/60 focus:ring-1 focus:ring-hop-gold/30 disabled:opacity-60"
+          className="min-h-12 w-full flex-1 rounded-full border border-hop-green/30 bg-white/5 px-5 py-3 text-base text-hop-white placeholder:text-hop-white/35 outline-none transition focus:border-hop-green focus:ring-2 focus:ring-hop-green/20 disabled:opacity-60"
         />
         <button
           type="submit"
           disabled={status === "loading" || status === "success"}
-          className="rounded-full bg-hop-gold px-6 py-3 text-sm font-medium tracking-wide text-hop-dark transition hover:bg-hop-gold-light disabled:cursor-not-allowed disabled:opacity-60"
+          className="min-h-12 w-full shrink-0 rounded-full bg-hop-green px-6 py-3 text-base font-semibold tracking-wide text-hop-black transition active:scale-[0.98] hover:bg-hop-green-light disabled:cursor-not-allowed disabled:opacity-60 md:w-auto"
         >
           {status === "loading" ? "Joining…" : "Notify Me"}
         </button>
@@ -66,7 +71,7 @@ export function WaitlistForm() {
         <p
           role="status"
           className={`mt-3 text-center text-sm ${
-            status === "error" ? "text-red-400" : "text-hop-green-light"
+            status === "error" ? "text-red-400" : "text-hop-green"
           }`}
         >
           {message}

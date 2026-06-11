@@ -1,50 +1,52 @@
 @import "tailwindcss";
 
 :root {
-  --hop-dark: #0c0b09;
-  --hop-darker: #060605;
-  --hop-gold: #c9a227;
-  --hop-gold-light: #e8d48b;
-  --hop-green: #2d6b4a;
-  --hop-green-light: #6db88a;
-  --hop-cream: #f5f0e6;
-  --background: var(--hop-darker);
-  --foreground: var(--hop-cream);
+  --hop-black: #000000;
+  --hop-green: #aec9b0;
+  --hop-green-light: #c5d9c7;
+  --hop-green-dark: #8fb394;
+  --hop-white: #ffffff;
+  --background: var(--hop-black);
+  --foreground: var(--hop-white);
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --color-hop-dark: var(--hop-dark);
-  --color-hop-darker: var(--hop-darker);
-  --color-hop-gold: var(--hop-gold);
-  --color-hop-gold-light: var(--hop-gold-light);
+  --color-hop-black: var(--hop-black);
   --color-hop-green: var(--hop-green);
   --color-hop-green-light: var(--hop-green-light);
-  --color-hop-cream: var(--hop-cream);
+  --color-hop-green-dark: var(--hop-green-dark);
+  --color-hop-white: var(--hop-white);
   --font-sans: var(--font-dm-sans);
-  --font-display: var(--font-cormorant);
-  --animate-pulse-slow: pulse-slow 4s ease-in-out infinite;
+  --animate-pulse-slow: pulse-slow 5s ease-in-out infinite;
 }
 
 @keyframes pulse-slow {
-  0%, 100% { opacity: 0.4; transform: scale(1); }
-  50% { opacity: 0.7; transform: scale(1.05); }
+  0%,
+  100% {
+    opacity: 0.35;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.55;
+    transform: scale(1.04);
+  }
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-sans), system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
 }
 
-/* Subtle grain texture overlay */
 .grain::before {
   content: "";
   position: fixed;
   inset: 0;
   pointer-events: none;
-  opacity: 0.04;
+  opacity: 0.03;
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   z-index: 50;
 }
