@@ -1,5 +1,4 @@
-import { getEntryTypeLabel, getVenueLabel, VENUES } from "@/data/venues";
-import { getServiceWindow, serviceWindowShort } from "@/lib/service-windows";
+import { getVenueLabel, VENUES } from "@/data/venues";
 import {
   formatDateRangeLabel,
   formatTime,
@@ -84,30 +83,29 @@ export function buildGuestWelcomeMessage({
   guestName,
   partySize,
   venue,
-  entryType,
+  checkInAt,
 }: {
   guestName: string;
   partySize: number;
   venue: string;
-  entryType: string;
+  checkInAt: string;
 }): string {
   const venueLabel = getVenueLabel(venue);
-  const typeLabel = getEntryTypeLabel(entryType);
-  const windowLabel = serviceWindowShort(getServiceWindow(new Date().toISOString()));
+  const checkInTime = formatTime(checkInAt);
+  const guestWord = partySize > 1 ? "guests" : "guest";
 
   return `Hello ${guestName}!
 
-Welcome to ${venueLabel} — we're delighted to have you with us today.
+We're so happy you're here — welcome to *${venueLabel}*!
 
-Check-in confirmed
-• Party of ${partySize} guest${partySize > 1 ? "s" : ""}
-• ${typeLabel} · ${windowLabel} service
+Your check-in is confirmed at *${checkInTime}* for a party of ${partySize} ${guestWord}. We're delighted to have you with us today.
 
 Sarath City Capital Mall, 5th Floor, Hyderabad
 
-Wishing you a wonderful experience. We hope you have a great time with us.
+Make yourself comfortable and enjoy every moment — our team is here to take great care of you.
 
-— Team ${venueLabel}`;
+With warm wishes,
+Team ${venueLabel}`;
 }
 
 export function whatsAppUrl(mobileNo: string, message: string): string {

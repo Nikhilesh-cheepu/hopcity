@@ -66,7 +66,7 @@ export function EntryForm({
       const savedMobile = mobileNo.replace(/\D/g, "");
       const savedPartySize = Number(partySize);
       const savedVenue = venue;
-      const savedEntryType = entryType;
+      const checkInAt = data.reservation.createdAt as string;
 
       onSuccess();
 
@@ -74,7 +74,7 @@ export function EntryForm({
         guestName: savedName,
         partySize: savedPartySize,
         venue: savedVenue,
-        entryType: savedEntryType,
+        checkInAt,
       });
 
       window.location.href = whatsAppUrl(savedMobile, welcomeMessage);
