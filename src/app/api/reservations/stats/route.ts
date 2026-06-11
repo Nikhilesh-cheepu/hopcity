@@ -4,7 +4,7 @@ import { db } from "@/lib/db";
 import { parseVisitDate } from "@/lib/reservations";
 
 export async function GET(request: Request) {
-  if (!db) {
+  if (!db?.reservation) {
     return NextResponse.json({ error: "Database not configured." }, { status: 503 });
   }
 
@@ -19,7 +19,7 @@ export async function GET(request: Request) {
     const visitDate = parseVisitDate(date);
     const rows = await db.reservation.findMany({
       where: { visitDate },
-      select: { venue: true, partySize: true },
+      select: { venue: true, partySize: true, entryType: true },
     });
 
     const byVenue: Record<string, { entries: number; guests: number }> = {};
@@ -29,10 +29,14 @@ export async function GET(request: Request) {
 
     let totalEntries = 0;
     let totalGuests = 0;
+    let walkins = 0;
+    let reserved = 0;
 
     for (const row of rows) {
       totalEntries += 1;
       totalGuests += row.partySize;
+      if (row.entryType === "reserved") reserved += 1;
+      else walkins += 1;
       if (byVenue[row.venue]) {
         byVenue[row.venue].entries += 1;
         byVenue[row.venue].guests += row.partySize;
@@ -43,6 +47,8 @@ export async function GET(request: Request) {
       date,
       totalEntries,
       totalGuests,
+      walkins,
+      reserved,
       byVenue,
     });
   } catch (error) {

@@ -19,11 +19,21 @@ function createPrismaClient(): PrismaClient | null {
   return new PrismaClient({ adapter });
 }
 
+function isUsableClient(
+  client: PrismaClient | null | undefined,
+): client is PrismaClient {
+  return Boolean(client && "reservation" in client);
+}
+
 const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | null | undefined;
 };
 
-export const db = globalForPrisma.prisma ?? createPrismaClient();
+if (!isUsableClient(globalForPrisma.prisma)) {
+  globalForPrisma.prisma = createPrismaClient();
+}
+
+export const db = globalForPrisma.prisma ?? null;
 
 if (process.env.NODE_ENV !== "production" && db) {
   globalForPrisma.prisma = db;

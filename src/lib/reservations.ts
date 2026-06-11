@@ -1,8 +1,9 @@
-import { getVenueLabel } from "@/data/venues";
+import { getEntryTypeLabel, getVenueLabel } from "@/data/venues";
 
 export type ReservationRecord = {
   id: string;
   staffType: string;
+  entryType: string;
   guestName: string;
   mobileNo: string;
   partySize: number;
@@ -32,6 +33,10 @@ export function reservationVenueLabel(venue: string): string {
   return getVenueLabel(venue);
 }
 
+export function reservationEntryTypeLabel(entryType: string): string {
+  return getEntryTypeLabel(entryType);
+}
+
 export function parseVisitDate(dateStr: string): Date {
-  return new Date(`${dateStr}T00:00:00.000Z`);
+  return new Date(`${dateStr}T12:00:00.000Z`);
 }

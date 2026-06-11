@@ -1,25 +1,25 @@
 import { NextResponse } from "next/server";
-import { VENUES } from "@/data/venues";
+import { ENTRY_TYPES, VENUES } from "@/data/venues";
 import { db } from "@/lib/db";
 import { parseVisitDate, type ReservationRecord } from "@/lib/reservations";
 
 const MOBILE_REGEX = /^[6-9]\d{9}$/;
 
-function serialize(
-  r: {
-    id: string;
-    staffType: string;
-    guestName: string;
-    mobileNo: string;
-    partySize: number;
-    venue: string;
-    visitDate: Date;
-    createdAt: Date;
-  },
-): ReservationRecord {
+function serialize(r: {
+  id: string;
+  staffType: string;
+  entryType: string;
+  guestName: string;
+  mobileNo: string;
+  partySize: number;
+  venue: string;
+  visitDate: Date;
+  createdAt: Date;
+}): ReservationRecord {
   return {
     id: r.id,
     staffType: r.staffType,
+    entryType: r.entryType,
     guestName: r.guestName,
     mobileNo: r.mobileNo,
     partySize: r.partySize,
@@ -30,7 +30,7 @@ function serialize(
 }
 
 export async function GET(request: Request) {
-  if (!db) {
+  if (!db?.reservation) {
     return NextResponse.json({ error: "Database not configured." }, { status: 503 });
   }
 
@@ -59,13 +59,14 @@ export async function GET(request: Request) {
 }
 
 export async function POST(request: Request) {
-  if (!db) {
+  if (!db?.reservation) {
     return NextResponse.json({ error: "Database not configured." }, { status: 503 });
   }
 
   try {
     const body = await request.json();
     const staffType = typeof body.staffType === "string" ? body.staffType.trim() : "";
+    const entryType = typeof body.entryType === "string" ? body.entryType.trim() : "walkin";
     const guestName = typeof body.guestName === "string" ? body.guestName.trim() : "";
     const mobileRaw = typeof body.mobileNo === "string" ? body.mobileNo.replace(/\D/g, "") : "";
     const partySize = Number(body.partySize);
@@ -74,6 +75,10 @@ export async function POST(request: Request) {
 
     if (!staffType || !guestName || !venue || !visitDateStr) {
       return NextResponse.json({ error: "Please fill all required fields." }, { status: 400 });
+    }
+
+    if (!ENTRY_TYPES.some((e) => e.id === entryType)) {
+      return NextResponse.json({ error: "Invalid entry type." }, { status: 400 });
     }
 
     if (!MOBILE_REGEX.test(mobileRaw)) {
@@ -97,6 +102,7 @@ export async function POST(request: Request) {
     const row = await db.reservation.create({
       data: {
         staffType,
+        entryType,
         guestName,
         mobileNo: mobileRaw,
         partySize,

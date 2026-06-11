@@ -18,7 +18,7 @@ export function StaffPortal() {
   }
 
   return (
-    <div className="mx-auto w-full max-w-lg space-y-5 pb-8 sm:max-w-xl lg:max-w-2xl">
+    <div className="mx-auto w-full max-w-lg space-y-4 pb-8 sm:max-w-xl lg:max-w-2xl">
       <header className="text-center">
         <p className="text-[0.65rem] font-semibold uppercase tracking-[0.28em] text-hop-green">
           Staff Portal
@@ -28,8 +28,11 @@ export function StaffPortal() {
         </h1>
       </header>
 
-      <div className="flex items-center justify-between gap-3 rounded-xl border border-hop-green/15 bg-white/[0.03] px-4 py-3 shadow-[0_4px_24px_rgba(0,0,0,0.35)]">
-        <label htmlFor="visitDate" className="text-[0.65rem] font-semibold uppercase tracking-[0.18em] text-hop-green/80">
+      <div className="flex items-center justify-between gap-3 rounded-xl border border-hop-green/15 bg-white/[0.03] px-4 py-2.5 shadow-[0_4px_24px_rgba(0,0,0,0.35)]">
+        <label
+          htmlFor="visitDate"
+          className="text-[0.65rem] font-semibold uppercase tracking-[0.18em] text-hop-green/80"
+        >
           Date
         </label>
         <input
@@ -40,8 +43,6 @@ export function StaffPortal() {
           className="rounded-lg border border-hop-green/20 bg-black/50 px-3 py-2 text-sm text-hop-white outline-none focus:border-hop-green/50 focus:shadow-[0_0_16px_rgba(174,201,176,0.12)]"
         />
       </div>
-
-      <TodayStats key={`stats-${refreshKey}-${date}`} date={date} />
 
       <div className="flex rounded-2xl border border-hop-green/15 bg-black/40 p-1 shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]">
         <TabButton active={tab === "entry"} onClick={() => setTab("entry")}>
@@ -55,7 +56,10 @@ export function StaffPortal() {
       {tab === "entry" ? (
         <EntryForm date={date} onSuccess={handleEntrySuccess} />
       ) : (
-        <GuestList key={`guests-${refreshKey}-${date}`} date={date} />
+        <>
+          <TodayStats key={`stats-${refreshKey}-${date}`} date={date} />
+          <GuestList key={`guests-${refreshKey}-${date}`} date={date} />
+        </>
       )}
     </div>
   );

@@ -16,6 +16,7 @@ model WaitlistSignup {
 model Reservation {
   id        String   @id @default(cuid())
   staffType String
+  entryType String   @default("walkin")
   guestName String
   mobileNo  String
   partySize Int
@@ -26,4 +27,5 @@ model Reservation {
   @@index([visitDate])
   @@index([venue])
   @@index([visitDate, venue])
+  @@index([entryType])
 }

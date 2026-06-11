@@ -1,8 +1,16 @@
 "use client";
 
 import { FormEvent, useState } from "react";
-import { STAFF_TYPES, VENUES, type StaffType, type VenueId } from "@/data/venues";
+import {
+  ENTRY_TYPES,
+  STAFF_TYPES,
+  VENUES,
+  type EntryType,
+  type StaffType,
+  type VenueId,
+} from "@/data/venues";
 import { GlassCard } from "./GlassCard";
+import { WhatsAppButton } from "./WhatsAppButton";
 
 const inputClass =
   "min-h-12 w-full rounded-xl border border-hop-green/20 bg-black/50 px-4 py-3 text-base text-hop-white placeholder:text-hop-white/30 shadow-[inset_0_2px_8px_rgba(0,0,0,0.4)] outline-none transition focus:border-hop-green/60 focus:shadow-[0_0_20px_rgba(174,201,176,0.15)]";
@@ -18,12 +26,16 @@ export function EntryForm({
   onSuccess: () => void;
 }) {
   const [staffType, setStaffType] = useState<StaffType>(STAFF_TYPES[0]);
+  const [entryType, setEntryType] = useState<EntryType>("walkin");
   const [guestName, setGuestName] = useState("");
   const [mobileNo, setMobileNo] = useState("");
   const [partySize, setPartySize] = useState("2");
   const [venue, setVenue] = useState<VenueId>(VENUES[0].id);
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
   const [message, setMessage] = useState("");
+
+  const canWhatsApp =
+    guestName.trim().length > 0 && /^[6-9]\d{9}$/.test(mobileNo.replace(/\D/g, ""));
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
@@ -36,6 +48,7 @@ export function EntryForm({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           staffType,
+          entryType,
           guestName,
           mobileNo,
           partySize: Number(partySize),
@@ -57,6 +70,7 @@ export function EntryForm({
       setGuestName("");
       setMobileNo("");
       setPartySize("2");
+      setEntryType("walkin");
       onSuccess();
 
       setTimeout(() => {
@@ -76,6 +90,26 @@ export function EntryForm({
       </p>
 
       <form onSubmit={handleSubmit} className="space-y-4">
+        <div>
+          <span className={labelClass}>Entry Type</span>
+          <div className="grid grid-cols-2 gap-2">
+            {ENTRY_TYPES.map((t) => (
+              <button
+                key={t.id}
+                type="button"
+                onClick={() => setEntryType(t.id)}
+                className={`min-h-11 rounded-xl border text-sm font-semibold transition ${
+                  entryType === t.id
+                    ? "border-hop-green/50 bg-hop-green/20 text-hop-green-light shadow-[0_0_16px_rgba(174,201,176,0.15)]"
+                    : "border-white/10 bg-black/30 text-hop-white/45"
+                }`}
+              >
+                {t.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
         <div>
           <label htmlFor="staffType" className={labelClass}>
             Staff Type
@@ -161,6 +195,17 @@ export function EntryForm({
             </select>
           </div>
         </div>
+
+        {canWhatsApp && (
+          <WhatsAppButton
+            guestName={guestName.trim()}
+            mobileNo={mobileNo.replace(/\D/g, "")}
+            partySize={Number(partySize) || 1}
+            venue={venue}
+            entryType={entryType}
+            className="w-full"
+          />
+        )}
 
         <button
           type="submit"

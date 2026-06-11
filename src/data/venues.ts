@@ -17,8 +17,19 @@ export const STAFF_TYPES = [
 
 export type StaffType = (typeof STAFF_TYPES)[number];
 
+export const ENTRY_TYPES = [
+  { id: "walkin", label: "Walk-in" },
+  { id: "reserved", label: "Reserved" },
+] as const;
+
+export type EntryType = (typeof ENTRY_TYPES)[number]["id"];
+
 export function getVenueLabel(id: string): string {
   return VENUES.find((v) => v.id === id)?.label ?? id;
+}
+
+export function getEntryTypeLabel(id: string): string {
+  return ENTRY_TYPES.find((e) => e.id === id)?.label ?? id;
 }
 
 export function todayDateString(): string {
