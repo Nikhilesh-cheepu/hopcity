@@ -1,9 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { VENUES } from "@/data/venues";
+import { BOOKING_SOURCES, VENUES } from "@/data/venues";
 import {
   formatTime,
+  reservationBookingSourceLabel,
   reservationEntryTypeLabel,
   reservationServiceWindowLabel,
   reservationVenueLabel,
@@ -14,30 +15,58 @@ import { GlassCard } from "./GlassCard";
 
 export function GuestList({ from, to }: { from: string; to: string }) {
   const [venueFilter, setVenueFilter] = useState("all");
+  const [sourceFilter, setSourceFilter] = useState("all");
 
   return (
     <div className="space-y-3">
-      <div className="flex gap-2 overflow-x-auto pb-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-        <VenueChip
-          label="All"
-          active={venueFilter === "all"}
-          onClick={() => setVenueFilter("all")}
-        />
-        {VENUES.map((v) => (
-          <VenueChip
-            key={v.id}
-            label={v.label}
-            active={venueFilter === v.id}
-            onClick={() => setVenueFilter(v.id)}
+      <div>
+        <p className="mb-1.5 text-[0.6rem] font-semibold uppercase tracking-[0.16em] text-hop-white/35">
+          Venue
+        </p>
+        <div className="flex gap-2 overflow-x-auto pb-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+          <FilterChip
+            label="All"
+            active={venueFilter === "all"}
+            onClick={() => setVenueFilter("all")}
           />
-        ))}
+          {VENUES.map((v) => (
+            <FilterChip
+              key={v.id}
+              label={v.label}
+              active={venueFilter === v.id}
+              onClick={() => setVenueFilter(v.id)}
+            />
+          ))}
+        </div>
+      </div>
+
+      <div>
+        <p className="mb-1.5 text-[0.6rem] font-semibold uppercase tracking-[0.16em] text-hop-white/35">
+          Source
+        </p>
+        <div className="flex gap-2 overflow-x-auto pb-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+          <FilterChip
+            label="All"
+            active={sourceFilter === "all"}
+            onClick={() => setSourceFilter("all")}
+          />
+          {BOOKING_SOURCES.map((s) => (
+            <FilterChip
+              key={s.id}
+              label={s.label}
+              active={sourceFilter === s.id}
+              onClick={() => setSourceFilter(s.id)}
+            />
+          ))}
+        </div>
       </div>
 
       <GuestListResults
-        key={`${from}-${to}-${venueFilter}`}
+        key={`${from}-${to}-${venueFilter}-${sourceFilter}`}
         from={from}
         to={to}
         venueFilter={venueFilter}
+        sourceFilter={sourceFilter}
       />
     </div>
   );
@@ -47,10 +76,12 @@ function GuestListResults({
   from,
   to,
   venueFilter,
+  sourceFilter,
 }: {
   from: string;
   to: string;
   venueFilter: string;
+  sourceFilter: string;
 }) {
   const [reservations, setReservations] = useState<ReservationRecord[]>([]);
   const [loading, setLoading] = useState(true);
@@ -59,6 +90,7 @@ function GuestListResults({
     let cancelled = false;
     const params = new URLSearchParams({ from, to });
     if (venueFilter !== "all") params.set("venue", venueFilter);
+    if (sourceFilter !== "all") params.set("bookingSource", sourceFilter);
 
     fetch(`/api/reservations?${params}`)
       .then((r) => r.json())
@@ -72,7 +104,7 @@ function GuestListResults({
     return () => {
       cancelled = true;
     };
-  }, [from, to, venueFilter]);
+  }, [from, to, venueFilter, sourceFilter]);
 
   if (loading) {
     return (
@@ -88,7 +120,8 @@ function GuestListResults({
     return (
       <GlassCard>
         <p className="py-6 text-center text-sm text-hop-white/40">
-          No guests for this period{venueFilter !== "all" ? " at this venue" : ""}.
+          No guests for this period
+          {venueFilter !== "all" || sourceFilter !== "all" ? " with these filters" : ""}.
         </p>
       </GlassCard>
     );
@@ -129,6 +162,9 @@ function GuestListResults({
               <span className="inline-block rounded-full border border-[#74c274]/30 bg-[#74c274]/10 px-2.5 py-0.5 text-[0.65rem] font-medium uppercase tracking-wide text-[#74c274]">
                 {reservationVenueLabel(r.venue)}
               </span>
+              <span className="inline-block rounded-full border border-sky-500/30 bg-sky-500/10 px-2.5 py-0.5 text-[0.65rem] font-medium uppercase tracking-wide text-sky-300">
+                {reservationBookingSourceLabel(r.bookingSource)}
+              </span>
               <span
                 className={`inline-block rounded-full border px-2.5 py-0.5 text-[0.65rem] font-medium uppercase tracking-wide ${
                   getServiceWindow(r.createdAt) === "dinner"
@@ -156,7 +192,7 @@ function GuestListResults({
   );
 }
 
-function VenueChip({
+function FilterChip({
   label,
   active,
   onClick,

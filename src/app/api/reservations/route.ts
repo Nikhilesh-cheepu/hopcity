@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { ENTRY_TYPES, VENUES } from "@/data/venues";
+import { BOOKING_SOURCES, ENTRY_TYPES, VENUES } from "@/data/venues";
 import { db } from "@/lib/db";
 import {
   parseDateRange,
@@ -13,6 +13,7 @@ function serialize(r: {
   id: string;
   staffType: string;
   entryType: string;
+  bookingSource: string;
   guestName: string;
   mobileNo: string;
   partySize: number;
@@ -24,6 +25,7 @@ function serialize(r: {
     id: r.id,
     staffType: r.staffType,
     entryType: r.entryType,
+    bookingSource: r.bookingSource,
     guestName: r.guestName,
     mobileNo: r.mobileNo,
     partySize: r.partySize,
@@ -55,6 +57,7 @@ export async function GET(request: Request) {
 
   const { searchParams } = new URL(request.url);
   const venue = searchParams.get("venue");
+  const bookingSource = searchParams.get("bookingSource");
   const dateFilter = resolveDateFilter(searchParams);
 
   if (!dateFilter) {
@@ -69,6 +72,7 @@ export async function GET(request: Request) {
       where: {
         visitDate: dateFilter,
         ...(venue && venue !== "all" ? { venue } : {}),
+        ...(bookingSource && bookingSource !== "all" ? { bookingSource } : {}),
       },
       orderBy: [{ visitDate: "desc" }, { createdAt: "desc" }],
     });
@@ -89,6 +93,8 @@ export async function POST(request: Request) {
     const body = await request.json();
     const staffType = typeof body.staffType === "string" ? body.staffType.trim() : "";
     const entryType = typeof body.entryType === "string" ? body.entryType.trim() : "walkin";
+    const bookingSource =
+      typeof body.bookingSource === "string" ? body.bookingSource.trim() : "direct";
     const guestName = typeof body.guestName === "string" ? body.guestName.trim() : "";
     const mobileRaw = typeof body.mobileNo === "string" ? body.mobileNo.replace(/\D/g, "") : "";
     const partySize = Number(body.partySize);
@@ -101,6 +107,10 @@ export async function POST(request: Request) {
 
     if (!ENTRY_TYPES.some((e) => e.id === entryType)) {
       return NextResponse.json({ error: "Invalid entry type." }, { status: 400 });
+    }
+
+    if (!BOOKING_SOURCES.some((s) => s.id === bookingSource)) {
+      return NextResponse.json({ error: "Invalid booking source." }, { status: 400 });
     }
 
     if (!MOBILE_REGEX.test(mobileRaw)) {
@@ -125,6 +135,7 @@ export async function POST(request: Request) {
       data: {
         staffType,
         entryType,
+        bookingSource,
         guestName,
         mobileNo: mobileRaw,
         partySize,

@@ -14,18 +14,20 @@ model WaitlistSignup {
 }
 
 model Reservation {
-  id        String   @id @default(cuid())
-  staffType String
-  entryType String   @default("walkin")
-  guestName String
-  mobileNo  String
-  partySize Int
-  venue     String
-  visitDate DateTime @db.Date
-  createdAt DateTime @default(now())
+  id            String   @id @default(cuid())
+  staffType     String
+  entryType     String   @default("walkin")
+  bookingSource String   @default("direct")
+  guestName     String
+  mobileNo      String
+  partySize     Int
+  venue         String
+  visitDate     DateTime @db.Date
+  createdAt     DateTime @default(now())
 
   @@index([visitDate])
   @@index([venue])
   @@index([visitDate, venue])
   @@index([entryType])
+  @@index([bookingSource])
 }

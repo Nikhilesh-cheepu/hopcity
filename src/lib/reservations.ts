@@ -1,4 +1,4 @@
-import { getEntryTypeLabel, getVenueLabel } from "@/data/venues";
+import { getBookingSourceLabel, getEntryTypeLabel, getVenueLabel } from "@/data/venues";
 import { getServiceWindow, serviceWindowShort, type ServiceWindow } from "@/lib/service-windows";
 
 const IST = "Asia/Kolkata";
@@ -7,6 +7,7 @@ export type ReservationRecord = {
   id: string;
   staffType: string;
   entryType: string;
+  bookingSource: string;
   guestName: string;
   mobileNo: string;
   partySize: number;
@@ -65,6 +66,10 @@ export function reservationVenueLabel(venue: string): string {
 
 export function reservationEntryTypeLabel(entryType: string): string {
   return getEntryTypeLabel(entryType);
+}
+
+export function reservationBookingSourceLabel(bookingSource: string): string {
+  return getBookingSourceLabel(bookingSource);
 }
 
 export function parseVisitDate(dateStr: string): Date {

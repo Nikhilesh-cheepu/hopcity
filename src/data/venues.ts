@@ -24,12 +24,26 @@ export const ENTRY_TYPES = [
 
 export type EntryType = (typeof ENTRY_TYPES)[number]["id"];
 
+export const BOOKING_SOURCES = [
+  { id: "direct", label: "Direct" },
+  { id: "swiggy", label: "Swiggy" },
+  { id: "zomato", label: "Zomato" },
+  { id: "call", label: "Call" },
+  { id: "eatos", label: "Eatos" },
+] as const;
+
+export type BookingSource = (typeof BOOKING_SOURCES)[number]["id"];
+
 export function getVenueLabel(id: string): string {
   return VENUES.find((v) => v.id === id)?.label ?? id;
 }
 
 export function getEntryTypeLabel(id: string): string {
   return ENTRY_TYPES.find((e) => e.id === id)?.label ?? id;
+}
+
+export function getBookingSourceLabel(id: string): string {
+  return BOOKING_SOURCES.find((s) => s.id === id)?.label ?? id;
 }
 
 export function todayDateString(): string {

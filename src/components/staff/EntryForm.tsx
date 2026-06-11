@@ -2,9 +2,11 @@
 
 import { FormEvent, useState } from "react";
 import {
+  BOOKING_SOURCES,
   ENTRY_TYPES,
   STAFF_TYPES,
   VENUES,
+  type BookingSource,
   type EntryType,
   type StaffType,
   type VenueId,
@@ -27,6 +29,7 @@ export function EntryForm({
 }) {
   const [staffType, setStaffType] = useState<StaffType>(STAFF_TYPES[0]);
   const [entryType, setEntryType] = useState<EntryType>("walkin");
+  const [bookingSource, setBookingSource] = useState<BookingSource>("direct");
   const [guestName, setGuestName] = useState("");
   const [mobileNo, setMobileNo] = useState("");
   const [partySize, setPartySize] = useState("2");
@@ -46,6 +49,7 @@ export function EntryForm({
         body: JSON.stringify({
           staffType,
           entryType,
+          bookingSource,
           guestName,
           mobileNo,
           partySize: Number(partySize),
@@ -106,6 +110,26 @@ export function EntryForm({
                 }`}
               >
                 {t.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div>
+          <span className={labelClass}>Reservation Source</span>
+          <div className="grid grid-cols-3 gap-2 sm:grid-cols-5">
+            {BOOKING_SOURCES.map((s) => (
+              <button
+                key={s.id}
+                type="button"
+                onClick={() => setBookingSource(s.id)}
+                className={`min-h-11 rounded-xl border px-1 text-xs font-semibold transition sm:text-sm ${
+                  bookingSource === s.id
+                    ? "border-[#74c274] bg-[#74c274]/20 text-[#74c274] shadow-[0_0_16px_rgba(116,194,116,0.25)]"
+                    : "border-white/10 bg-black/30 text-hop-white/45"
+                }`}
+              >
+                {s.label}
               </button>
             ))}
           </div>

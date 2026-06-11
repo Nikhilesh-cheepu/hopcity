@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { VENUES } from "@/data/venues";
+import { BOOKING_SOURCES, VENUES } from "@/data/venues";
 import { db } from "@/lib/db";
 import { parseDateRange, parseVisitDate } from "@/lib/reservations";
 import { addToWindowStats, emptyWindowStats } from "@/lib/service-windows";
@@ -37,7 +37,13 @@ export async function GET(request: Request) {
   try {
     const rows = await db.reservation.findMany({
       where: { visitDate: resolved.range },
-      select: { venue: true, partySize: true, entryType: true, createdAt: true },
+      select: {
+        venue: true,
+        partySize: true,
+        entryType: true,
+        bookingSource: true,
+        createdAt: true,
+      },
     });
 
     const byVenue: Record<string, { entries: number; guests: number }> = {};
@@ -46,6 +52,10 @@ export async function GET(request: Request) {
     }
 
     const byWindow = emptyWindowStats();
+    const byBookingSource: Record<string, { entries: number; guests: number }> = {};
+    for (const s of BOOKING_SOURCES) {
+      byBookingSource[s.id] = { entries: 0, guests: 0 };
+    }
 
     let totalEntries = 0;
     let totalGuests = 0;
@@ -62,6 +72,10 @@ export async function GET(request: Request) {
         byVenue[row.venue].guests += row.partySize;
       }
       addToWindowStats(byWindow, row.createdAt.toISOString(), row.partySize);
+      if (byBookingSource[row.bookingSource]) {
+        byBookingSource[row.bookingSource].entries += 1;
+        byBookingSource[row.bookingSource].guests += row.partySize;
+      }
     }
 
     return NextResponse.json({
@@ -73,6 +87,7 @@ export async function GET(request: Request) {
       reserved,
       byVenue,
       byWindow,
+      byBookingSource,
     });
   } catch (error) {
     console.error("Reservation stats error:", error);

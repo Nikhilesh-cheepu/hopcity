@@ -1,7 +1,8 @@
-import { getVenueLabel, VENUES } from "@/data/venues";
+import { BOOKING_SOURCES, getVenueLabel, VENUES } from "@/data/venues";
 import {
   formatDateRangeLabel,
   formatTime,
+  reservationBookingSourceLabel,
   reservationEntryTypeLabel,
   reservationServiceWindowLabel,
   reservationVenueLabel,
@@ -21,6 +22,7 @@ export type ReportStats = {
   reserved: number;
   byVenue: Record<string, { entries: number; guests: number }>;
   byWindow?: Record<ServiceWindow, WindowStats>;
+  byBookingSource?: Record<string, { entries: number; guests: number }>;
 };
 
 export function buildStaffReportMessage({
@@ -56,6 +58,13 @@ export function buildStaffReportMessage({
     );
   }
 
+  lines.push("", "*BY SOURCE*");
+
+  for (const s of BOOKING_SOURCES) {
+    const row = stats.byBookingSource?.[s.id];
+    lines.push(`• ${s.label}: ${row?.guests ?? 0} guests (${row?.entries ?? 0} entries)`);
+  }
+
   lines.push("", "*BY VENUE*");
 
   for (const v of VENUES) {
@@ -67,7 +76,7 @@ export function buildStaffReportMessage({
     lines.push("", "*GUEST LIST*");
     reservations.forEach((r, i) => {
       lines.push(
-        `${i + 1}. ${r.guestName} | ${r.mobileNo} | ${r.partySize} pax | ${reservationVenueLabel(r.venue)} | ${reservationEntryTypeLabel(r.entryType)} | ${reservationServiceWindowLabel(r.createdAt)} | ${formatTime(r.createdAt)} IST`,
+        `${i + 1}. ${r.guestName} | ${r.mobileNo} | ${r.partySize} pax | ${reservationVenueLabel(r.venue)} | ${reservationBookingSourceLabel(r.bookingSource)} | ${reservationEntryTypeLabel(r.entryType)} | ${formatTime(r.createdAt)} IST`,
       );
     });
   } else {

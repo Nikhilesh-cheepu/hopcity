@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { VENUES } from "@/data/venues";
+import { BOOKING_SOURCES, VENUES } from "@/data/venues";
 import { formatDateRangeLabel } from "@/lib/reservations";
 import { DINNER_WINDOW_LABEL, LUNCH_WINDOW_LABEL, type ServiceWindow } from "@/lib/service-windows";
 
@@ -14,6 +14,7 @@ type Stats = {
   reserved: number;
   byVenue: Record<string, { entries: number; guests: number }>;
   byWindow?: Record<ServiceWindow, WindowStats>;
+  byBookingSource?: Record<string, { entries: number; guests: number }>;
 };
 
 export function TodayStats({ from, to }: { from: string; to: string }) {
@@ -63,6 +64,19 @@ function TodayStatsInner({ from, to }: { from: string; to: string }) {
           Dinner {DINNER_WINDOW_LABEL}:{" "}
           <span className="font-semibold">{stats?.byWindow?.dinner.guests ?? 0}</span>
         </span>
+      </div>
+      <div className="mt-2 flex flex-wrap gap-1.5">
+        {BOOKING_SOURCES.map((s) => (
+          <span
+            key={s.id}
+            className="rounded-full border border-sky-500/20 bg-sky-500/5 px-2 py-0.5 text-[0.6rem] text-sky-300/80"
+          >
+            {s.label}{" "}
+            <span className="font-medium text-sky-200">
+              {stats?.byBookingSource?.[s.id]?.guests ?? 0}
+            </span>
+          </span>
+        ))}
       </div>
       <div className="mt-2 flex flex-wrap gap-1.5">
         {VENUES.map((v) => (
