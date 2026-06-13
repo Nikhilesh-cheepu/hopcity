@@ -19,7 +19,7 @@ export type ReservationRecord = {
 };
 
 export function formatVisitDate(dateStr: string): string {
-  const d = new Date(`${dateStr}T12:00:00`);
+  const d = new Date(`${dateStr}T12:00:00+05:30`);
   return d.toLocaleDateString("en-IN", {
     timeZone: IST,
     weekday: "short",
@@ -40,6 +40,7 @@ export function formatTime(iso: string): string {
     hour: "2-digit",
     minute: "2-digit",
     hour12: true,
+    hourCycle: "h12",
   });
 }
 
@@ -77,7 +78,7 @@ export function reservationBookingSourceLabel(
 }
 
 export function parseVisitDate(dateStr: string): Date {
-  return new Date(`${dateStr}T12:00:00.000Z`);
+  return new Date(`${dateStr}T12:00:00+05:30`);
 }
 
 export function parseDateRange(from: string, to: string): { gte: Date; lte: Date } {

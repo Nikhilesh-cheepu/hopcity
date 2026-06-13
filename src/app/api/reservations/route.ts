@@ -7,13 +7,12 @@ import {
   VENUES,
 } from "@/data/venues";
 import { db } from "@/lib/db";
+import { normalizeIndianMobile } from "@/lib/mobile";
 import {
   parseDateRange,
   parseVisitDate,
   type ReservationRecord,
 } from "@/lib/reservations";
-
-const MOBILE_REGEX = /^[6-9]\d{9}$/;
 
 function serialize(r: {
   id: string;
@@ -118,7 +117,9 @@ export async function POST(request: Request) {
     const bookingSourceOther =
       typeof body.bookingSourceOther === "string" ? body.bookingSourceOther.trim() : "";
     const guestName = typeof body.guestName === "string" ? body.guestName.trim() : "";
-    const mobileRaw = typeof body.mobileNo === "string" ? body.mobileNo.replace(/\D/g, "") : "";
+    const mobileNormalized = normalizeIndianMobile(
+      typeof body.mobileNo === "string" ? body.mobileNo : "",
+    );
     const partySize = Number(body.partySize);
     const venue = typeof body.venue === "string" ? body.venue.trim() : "";
     const visitDateStr = typeof body.visitDate === "string" ? body.visitDate : "";
@@ -152,9 +153,9 @@ export async function POST(request: Request) {
       }
     }
 
-    if (!MOBILE_REGEX.test(mobileRaw)) {
+    if (!mobileNormalized) {
       return NextResponse.json(
-        { error: "Enter a valid 10-digit Indian mobile number." },
+        { error: "Enter a valid Indian mobile (+91 or 10 digits)." },
         { status: 400 },
       );
     }
@@ -198,7 +199,7 @@ export async function POST(request: Request) {
         specialOccasion,
         specialOccasionLabel,
         guestName,
-        mobileNo: mobileRaw,
+        mobileNo: mobileNormalized,
         partySize,
         venue,
         visitDate: parseVisitDate(visitDateStr),

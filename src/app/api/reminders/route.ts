@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
+import { normalizeIndianMobile } from "@/lib/mobile";
 import type { ReminderRecord } from "@/lib/reminders";
 
 function serialize(r: {
@@ -62,7 +63,9 @@ export async function POST(request: Request) {
   try {
     const body = await request.json();
     const guestName = typeof body.guestName === "string" ? body.guestName.trim() : "";
-    const mobileRaw = typeof body.mobileNo === "string" ? body.mobileNo.replace(/\D/g, "") : "";
+    const mobileNormalized = normalizeIndianMobile(
+      typeof body.mobileNo === "string" ? body.mobileNo : "",
+    );
     const remindAtStr = typeof body.remindAt === "string" ? body.remindAt : "";
     const note = typeof body.note === "string" ? body.note.trim() : "";
     const reservationId =
@@ -73,7 +76,7 @@ export async function POST(request: Request) {
     const specialOccasionLabel =
       typeof body.specialOccasionLabel === "string" ? body.specialOccasionLabel.trim() : null;
 
-    if (!guestName || !mobileRaw || !remindAtStr) {
+    if (!guestName || !mobileNormalized || !remindAtStr) {
       return NextResponse.json({ error: "Guest, mobile and reminder time are required." }, { status: 400 });
     }
 
@@ -85,7 +88,7 @@ export async function POST(request: Request) {
     const row = await db.guestReminder.create({
       data: {
         guestName,
-        mobileNo: mobileRaw,
+        mobileNo: mobileNormalized,
         remindAt,
         note: note || null,
         reservationId,

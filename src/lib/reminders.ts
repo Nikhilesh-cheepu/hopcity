@@ -18,6 +18,7 @@ const IST = "Asia/Kolkata";
 export function formatReminderDateTime(iso: string): string {
   return new Date(iso).toLocaleString("en-IN", {
     timeZone: IST,
+    weekday: "short",
     day: "numeric",
     month: "short",
     hour: "2-digit",

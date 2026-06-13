@@ -6,11 +6,11 @@ export const DINNER_WINDOW_LABEL = "6 PM – 12:30 AM";
 const IST = "Asia/Kolkata";
 
 export function getISTMinutes(iso: string): number {
-  const parts = new Intl.DateTimeFormat("en-IN", {
+  const parts = new Intl.DateTimeFormat("en-GB", {
     timeZone: IST,
-    hour: "numeric",
-    minute: "numeric",
-    hour12: false,
+    hour: "2-digit",
+    minute: "2-digit",
+    hourCycle: "h23",
   }).formatToParts(new Date(iso));
 
   const hour = Number(parts.find((p) => p.type === "hour")?.value ?? 0);

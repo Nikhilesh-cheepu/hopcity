@@ -1,6 +1,11 @@
 "use client";
 
-import { daysAgoDateString, todayDateString, tomorrowDateString } from "@/lib/datetime-ui";
+import {
+  ALL_TIME_FROM_DATE,
+  daysAgoDateString,
+  todayDateString,
+  tomorrowDateString,
+} from "@/lib/datetime-ui";
 
 const inputClass =
   "w-full rounded-lg border border-hop-green/20 bg-black/50 px-3 py-2.5 text-sm text-hop-white outline-none focus:border-hop-green/50 focus:shadow-[0_0_16px_rgba(116,194,116,0.12)] [color-scheme:dark]";
@@ -94,6 +99,15 @@ export function DateRangeFields({
           }}
         >
           Last 7 days
+        </QuickChip>
+        <QuickChip
+          active={from === ALL_TIME_FROM_DATE && to === today}
+          onClick={() => {
+            onFromChange(ALL_TIME_FROM_DATE);
+            onToChange(today);
+          }}
+        >
+          All time
         </QuickChip>
       </div>
       <div className="grid grid-cols-2 gap-3">

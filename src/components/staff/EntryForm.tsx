@@ -13,6 +13,7 @@ import {
   type VenueId,
 } from "@/data/venues";
 import { buildGuestWelcomeMessage, whatsAppUrl } from "@/lib/whatsapp";
+import { normalizeIndianMobile } from "@/lib/mobile";
 import { GlassCard } from "./GlassCard";
 
 const inputClass =
@@ -49,6 +50,11 @@ export function EntryForm({
     } else {
       setBookingSource("call");
     }
+  }
+
+  function handleMobileBlur() {
+    const normalized = normalizeIndianMobile(mobileNo);
+    if (normalized) setMobileNo(normalized);
   }
 
   async function handleSubmit(e: FormEvent) {
@@ -91,7 +97,7 @@ export function EntryForm({
       }
 
       const savedName = guestName.trim();
-      const savedMobile = mobileNo.replace(/\D/g, "");
+      const savedMobile = normalizeIndianMobile(mobileNo) ?? mobileNo.replace(/\D/g, "");
       const savedPartySize = Number(partySize);
       const savedVenue = venue;
       const checkInAt = data.reservation.createdAt as string;
@@ -223,14 +229,26 @@ export function EntryForm({
           <input
             id="mobileNo"
             type="tel"
-            inputMode="numeric"
+            inputMode="tel"
+            autoComplete="tel"
             value={mobileNo}
             onChange={(e) => setMobileNo(e.target.value)}
-            placeholder="10-digit mobile"
+            onBlur={handleMobileBlur}
+            onPaste={(e) => {
+              const pasted = e.clipboardData.getData("text");
+              const normalized = normalizeIndianMobile(pasted);
+              if (normalized) {
+                e.preventDefault();
+                setMobileNo(normalized);
+              }
+            }}
+            placeholder="Paste +91 or 10-digit mobile"
             required
-            maxLength={10}
             className={inputClass}
           />
+          <p className="mt-1 text-[0.6rem] text-hop-white/30">
+            +91, spaces, and dashes are OK — we clean it automatically
+          </p>
         </div>
 
         <div className="grid grid-cols-2 gap-3">

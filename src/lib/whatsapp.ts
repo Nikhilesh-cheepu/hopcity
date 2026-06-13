@@ -1,5 +1,6 @@
 import { formatHelpContactLine } from "@/data/venue-contact";
 import { BOOKING_SOURCES, getVenueLabel, VENUES } from "@/data/venues";
+import { formatMobileForWhatsApp } from "@/lib/mobile";
 import {
   formatDateRangeLabel,
   formatTime,
@@ -121,11 +122,11 @@ Team ${venueLabel}`;
 }
 
 export function whatsAppUrl(mobileNo: string, message: string): string {
-  const digits = mobileNo.replace(/\D/g, "");
-  const phone = digits.length === 10 ? `91${digits}` : digits;
+  const phone = formatMobileForWhatsApp(mobileNo);
   return `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
 }
 
 export function getReportRecipient(): string {
-  return process.env.NEXT_PUBLIC_STAFF_REPORT_WHATSAPP ?? "7013884485";
+  const raw = process.env.NEXT_PUBLIC_STAFF_REPORT_WHATSAPP ?? "7013884485";
+  return formatMobileForWhatsApp(raw);
 }
